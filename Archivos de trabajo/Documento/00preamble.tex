@@ -1,42 +1,68 @@
-\usepackage{MiTesis}
-
+% =============================
+% Idioma y matemáticas
+% =============================
 \usepackage[spanish, es-lcroman]{babel} 
 \usepackage{amsmath,amsfonts,amssymb}
 
-%% Other Packages
-\usepackage{xcolor}     % defining and using colors
-\usepackage{csquotes}   % For inline and display quotations
-\usepackage{graphicx}   % For Path of figures
-\usepackage{caption}    % For additional caption settings
-\usepackage{subcaption} % Caption inside minipages
-\usepackage{pdfpages}   % For including pdf pages
-\usepackage[refpage]{nomencl}   % For Nomenclature
+% =============================
+% Tu estilo para paper
+% =============================
+\usepackage{paper} % debe estar después de los paquetes base
 
-%For tables
-\usepackage{multicol} % for multiple columns in tables
-\usepackage{multirow} % for multiple rows in tables
-\usepackage{booktabs} % for better tables
+% =============================
+% Otros paquetes
+% =============================
+\usepackage{xcolor}       % Colores para comentarios
+\usepackage{csquotes}     % Citas
+\usepackage{graphicx}     % Para imágenes
+\usepackage{caption}      % Configuración de captions
+\usepackage{subcaption}   % Subfiguras
+\usepackage{pdfpages}     % Para incluir PDFs
+\usepackage[refpage]{nomencl} % Nomenclatura
 
-%%Referencing
-\usepackage{hyperref} % for urls and DOIs in references
-\usepackage[style=apa, backend=biber]{biblatex}
+% =============================
+% Tablas
+% =============================
+\usepackage{multicol}  % Múltiples columnas
+\usepackage{multirow}  % Múltiples filas
+\usepackage{booktabs}  % Tablas más bonitas
 
+% =============================
+% Referencias
+% =============================
+\usepackage{hyperref}  % Links y DOI
+\usepackage[style=apa, backend=biber]{biblatex} % APA 7
+\addbibresource{bibliografia.bib} % tu archivo .bib
+
+% =============================
+% Texto de relleno para pruebas
+% =============================
 \usepackage{lipsum}
 
-%nomenclature
+% =============================
+% Nomenclatura
+% =============================
 \makenomenclature
-\RequirePackage{ifthen}
+\usepackage{ifthen}
 \renewcommand{\nomgroup}[1]{%
 	\ifthenelse{\equal{#1}{A}}{\item[\textbf{Acronyms}]}{%
 		\ifthenelse{\equal{#1}{S}}{\item[\textbf{Symbols}]}{}}}
 \renewcommand*\pagedeclaration[1]{,~\textit{p.\,\hyperpage{#1}}}
 
-%captions for figures/tables inside minipages
-\captionsetup{labelsep=space,labelfont=bf}
+% =============================
+% Configuración de captions
+% =============================
+\captionsetup{labelsep=space, labelfont=bf}
 \renewcommand{\thefigure}{\arabic{chapter}.\arabic{figure}}
 \renewcommand{\thetable}{\arabic{chapter}.\arabic{table}}
 
+% =============================
+% Título, autor y abstract (definir en main.tex)
+% =============================
+\title{Título del paper}
+\author{Nombre de Autor}
+\newcommand{\abstracttext}{Resumen del paper aquí. \lipsum[1]}
 
-%Comentarios 
-\newcommand{\FL}[1]{\textcolor{blue}{[FL: #1]}}
-\newcommand{\YS}[1]{\textcolor{orange}{[YS: #1]}}
+\makeatletter
+\let\@abstract\abstracttext
+\makeatother

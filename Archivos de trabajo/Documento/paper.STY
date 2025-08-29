@@ -1,11 +1,25 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% MiTesis.sty - Fusion UPBMATH style + APA 7
+%% paper.sty - Fusion UPBMATH style + APA 7
 %% Version: 2025/08/16
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{MiTesis}[2025/08/16]
+\ProvidesPackage{paper}[2025/08/16]
 
 \makeatletter
+
+%% Primera página 
+\renewcommand{\maketitle}{
+    \thispagestyle{empty} % sin encabezados ni pies
+    \begin{center}
+        {\LARGE \bfseries \@title \par}   % título
+        \vspace{1em}
+        {\large \@author \par}            % autores
+        \vspace{1em}
+    \end{center}
+        {\normalsize \@abstract \par}
+    \vspace{2em}
+}
+
 % =============================
 % Márgenes APA 7 (1" = 2.54 cm)
 % =============================
@@ -100,43 +114,6 @@
 \setlength{\cftbeforechapskip}{1em}
 \setlength{\cftbeforesecskip}{0.5em}
 
-% =============================
-% Portada al estilo UPBMATH
-% =============================
-\newcommand{\titlep}{%
-  \thispagestyle{empty}
-  \null
-  \vspace*{0cm}
-  \begin{center}
-    \includegraphics[width=3.5cm]{logo_unl.png}
-    
-    {\bfseries\large UNIVERSIDAD NACIONAL DEL LITORAL}
-    
-    {\bfseries\large Licenciatura en Economía}
-
-    \vspace{4cm}
-    
-    {\itshape\LARGE Determinantes de las exportaciones agroindustriales argentinas: Un análisis econométrico}
-
-    \vfill
-
-    {\bfseries\Large Yamila Lorena Sonder}
-    
-    {\bfseries Director: }
-    
-    {\bfseries\normalsize adviser1, title}
-    
-    {\bfseries\normalsize University of }
-    
-    {\bfseries Co-director: }
-    
-    {\bfseries\normalsize adviser2, title}
-    
-    {\bfseries\normalsize University of }
-    
-    {\bfseries Diciembre 2025 }
-  \end{center}
-}
 
 % =============================
 % Prefacio y numeración de páginas
@@ -144,7 +121,7 @@
 \def\beforepreface{
    \pagenumbering{roman}
    \pagestyle{empty} 
-   \titlep
+   \maketitle
    \clearpage 
    \pagestyle{fancy} 
 }
@@ -158,5 +135,5 @@
 
 \makeatother
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% END OF MiTesis.sty
+% END OF paper.sty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

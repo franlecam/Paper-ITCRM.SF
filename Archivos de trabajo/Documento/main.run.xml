@@ -80,5 +80,8 @@
     <requires type="dynamic">
       <file>main.bcf</file>
     </requires>
+    <requires type="editable">
+      <file>bibliografia.bib</file>
+    </requires>
   </external>
 </requests>
