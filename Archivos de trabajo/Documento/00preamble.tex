@@ -1,0 +1,42 @@
+\usepackage{MiTesis}
+
+\usepackage[spanish, es-lcroman]{babel} 
+\usepackage{amsmath,amsfonts,amssymb}
+
+%% Other Packages
+\usepackage{xcolor}     % defining and using colors
+\usepackage{csquotes}   % For inline and display quotations
+\usepackage{graphicx}   % For Path of figures
+\usepackage{caption}    % For additional caption settings
+\usepackage{subcaption} % Caption inside minipages
+\usepackage{pdfpages}   % For including pdf pages
+\usepackage[refpage]{nomencl}   % For Nomenclature
+
+%For tables
+\usepackage{multicol} % for multiple columns in tables
+\usepackage{multirow} % for multiple rows in tables
+\usepackage{booktabs} % for better tables
+
+%%Referencing
+\usepackage{hyperref} % for urls and DOIs in references
+\usepackage[style=apa, backend=biber]{biblatex}
+
+\usepackage{lipsum}
+
+%nomenclature
+\makenomenclature
+\RequirePackage{ifthen}
+\renewcommand{\nomgroup}[1]{%
+	\ifthenelse{\equal{#1}{A}}{\item[\textbf{Acronyms}]}{%
+		\ifthenelse{\equal{#1}{S}}{\item[\textbf{Symbols}]}{}}}
+\renewcommand*\pagedeclaration[1]{,~\textit{p.\,\hyperpage{#1}}}
+
+%captions for figures/tables inside minipages
+\captionsetup{labelsep=space,labelfont=bf}
+\renewcommand{\thefigure}{\arabic{chapter}.\arabic{figure}}
+\renewcommand{\thetable}{\arabic{chapter}.\arabic{table}}
+
+
+%Comentarios 
+\newcommand{\FL}[1]{\textcolor{blue}{[FL: #1]}}
+\newcommand{\YS}[1]{\textcolor{orange}{[YS: #1]}}

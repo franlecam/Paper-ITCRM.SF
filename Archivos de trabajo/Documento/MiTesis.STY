@@ -1,0 +1,162 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% MiTesis.sty - Fusion UPBMATH style + APA 7
+%% Version: 2025/08/16
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{MiTesis}[2025/08/16]
+
+\makeatletter
+% =============================
+% Márgenes APA 7 (1" = 2.54 cm)
+% =============================
+\RequirePackage[
+    a4paper,
+    top=2.54cm,
+    bottom=2.54cm,
+    left=2.54cm,
+    right=2.54cm
+]{geometry}
+
+% =============================
+% Interlineado doble APA 7
+% =============================
+\RequirePackage{setspace} 
+\doublespacing
+
+% =============================
+% Índice APA
+% =============================
+\renewcommand{\contentsname}{Índice} % Título del índice
+\usepackage{tocloft}
+
+% Ajuste de estilo APA: título centrado, negrita, mismo tamaño de secciones
+\renewcommand{\cfttoctitlefont}{\hfill\bfseries}
+\renewcommand{\cftaftertoctitle}{\hfill}
+
+
+% =============================
+% Encabezados y pies de página APA 7
+% =============================
+\RequirePackage{fancyhdr}
+\fancyhf{}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\headheight}{15pt} 
+\pagestyle{fancy}
+
+
+% =============================
+% Listas sin espacio extra
+% =============================
+\RequirePackage{enumitem}
+\setlist[itemize]{noitemsep, topsep=0pt, parsep=0pt, partopsep=0pt}
+\setlist[enumerate]{noitemsep, topsep=0pt, parsep=0pt, partopsep=0pt}
+
+
+% =============================
+% Capítulos y apéndices
+% =============================
+\RequirePackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\filcenter\Large}
+  {\chaptertitlename\ \thechapter}{1pc}{\Large}
+\titlespacing*{\chapter}{0pt}{50pt}{40pt} % Espaciado para capítulos
+
+\RequirePackage[toc]{appendix}
+
+% =============================
+% Secciones y subsecciones
+% =============================
+\titleformat{\section}
+  {\normalfont\bfseries\Large}{\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
+
+\titleformat{\subsection}
+  {\normalfont\bfseries\large}{\thesubsection}{1em}{}
+\titlespacing*{\subsection}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\titleformat{\subsubsection}
+  {\normalfont\bfseries}{\thesubsubsection}{1em}{}
+\titlespacing*{\subsubsection}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+% =============================
+% Paragraph (nivel 4 APA)
+% =============================
+\titleformat{\paragraph}
+  {\normalfont\bfseries\normalsize}{}{0pt}{} % sin número, negrita
+\titlespacing*{\paragraph}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+% =============================
+% TOC, LOF, LOT
+% =============================
+\RequirePackage{tocloft}
+\renewcommand{\contentsname}{Table of Contents}
+\renewcommand{\listtablename}{List of Tables}
+\renewcommand{\listfigurename}{List of Figures}
+\renewcommand{\cftchapfont}{\normalfont}
+\renewcommand{\cftsecfont}{\normalfont}
+\renewcommand{\cftsubsecfont}{\normalfont}
+\setlength{\cftbeforechapskip}{1em}
+\setlength{\cftbeforesecskip}{0.5em}
+
+% =============================
+% Portada al estilo UPBMATH
+% =============================
+\newcommand{\titlep}{%
+  \thispagestyle{empty}
+  \null
+  \vspace*{0cm}
+  \begin{center}
+    \includegraphics[width=3.5cm]{logo_unl.png}
+    
+    {\bfseries\large UNIVERSIDAD NACIONAL DEL LITORAL}
+    
+    {\bfseries\large Licenciatura en Economía}
+
+    \vspace{4cm}
+    
+    {\itshape\LARGE Determinantes de las exportaciones agroindustriales argentinas: Un análisis econométrico}
+
+    \vfill
+
+    {\bfseries\Large Yamila Lorena Sonder}
+    
+    {\bfseries Director: }
+    
+    {\bfseries\normalsize adviser1, title}
+    
+    {\bfseries\normalsize University of }
+    
+    {\bfseries Co-director: }
+    
+    {\bfseries\normalsize adviser2, title}
+    
+    {\bfseries\normalsize University of }
+    
+    {\bfseries Diciembre 2025 }
+  \end{center}
+}
+
+% =============================
+% Prefacio y numeración de páginas
+% =============================
+\def\beforepreface{
+   \pagenumbering{roman}
+   \pagestyle{empty} 
+   \titlep
+   \clearpage 
+   \pagestyle{fancy} 
+}
+\def\afterpreface{\newpage
+   \pagenumbering{arabic}
+   \pagestyle{fancy}
+}
+
+% Start pagestyle
+\pagestyle{fancy}
+
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END OF MiTesis.sty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
