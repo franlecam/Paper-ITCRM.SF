@@ -1,7 +1,13 @@
-\chapter{Literatura}\label{chap2} 
+\section{Literatura}\label{section2} 
 
+\subsection{ITCRM en otros países}
 
-Tochklov (2020) desarrollaron un ITCRM (lo llaman RER en base a las siglas) para 77 regiones de Rusia, contrastándo su evolución con la del índice nacional entre 2000 y 2016. 
+La literatura sobre índices de tipo de cambio real multilatera es relativamente escasa. A continuación se pretence hacer una revisión exhaustiva de aquellos que se encuentra disponibles.
+
+En el caso de Rusia, \cite{tochkov_2021} desarrolló un sistema de TCRM sobre 77 regiones del país –de un total de 85–, atravezando 8 distritos federales\footnote{Al respecto, se menciona esta nota: Three autonomous areas (Nenets, Yamalo-Nenets, and Khanty-Mansi) were counted as parts of the larger regions
+they are subordinated to due to lack of data. Also excluded were the City of Sevastopol and the Republic of Crimea
+which were annexed by Russia in 2014.}. Dicho sistema, llamado RER en base a sus siglas en inglés (\textit{Real exchange rate}) recoge la evolución y la diferencia respecto al índice nacional durante el período 2000-2016.
+El índice se construye siguiendo la metodología de \cite{clark_1999}, que es la más utilizada en la literatura. En particular, el índice se calcula como un promedio geométrico\footnote{Existe una discusión acerca del tipo de promedio, en rigor: geométrico y aritmético, fallando la literatura en favor del primero. Al respecto, véase \cite{brodsky_1982} y Rosensweig, J. (1987).} ponderado de los tipos de cambio reales bilaterales entre la región y sus principales socios comerciales. Los pesos son fijos y se basan en los niveles de comercio del año 2014, que es el primer año con datos disponibles para todas las regiones.
 
 La definición que proponen para RER es la que conocemos:
 {
@@ -11,15 +17,11 @@ as a bilateral exchange rate, but given that countries have numerous trading par
 bilateral RERs are usually averaged to generate a weighted index.
 }
 
-Se plantea la cuestión acerca de si hacer un promedio geométrico o aritmético, y se concluye que el geométrico es mejor, ya que el aritmético puede sobreestimar la variabilidad del índice. Al respecto, leer:
+Otro ejemplo es el de \cite{yan_2016}, quienes construyen un índice de tipo de cambio real multilateral para las provincias chinas. En este caso, el índice se construye para 31 provincias y 40 socios comerciales, que en conjunto representan al menos el 80\% del volumen comercial de la provincia. El período analizado es 1995-2012. La metodología utilizada es similar a la de \cite{clark_1999} y \cite{tochkov_2021}, pero con algunas diferencias en la selección de los socios comerciales y en la elección del índice de precios.
 
-\begin{itemize}
-    \item \citet{brodsky_1982}. Arithmetic versus Geometric Effective Exchange Rates. Federal Reserve Bank of St. Louis Review, 64(5), 3–12.
-    \item Rosensweig, J. (1987). Exchange rate index construction: With a US dollar application. Journal of Foreign Exchange and International Finance, 1(3), 293–301. [NO LO PUDE ENCONTRAR]
-\end{itemize}
+\subsection{Discusión metodológica: ¿qué índice de precios utilizar?}
 
-Al respecto del índice de precios a escoger, Tochklov (2020) sugiere índice de precios mayoristas: "The selection of price indices is also of major importance for RER. Conceptually, Producer Price Index (PPI) is the preferable option given the focus on competitiveness of suppliers and the fact that the
-Consumer Price Index (CPI) contains a substantial number of nontraded goods and services, a large import component, and products with controlled or subsidies prices (Clark et al., 1999; Ellis, 2001; Rosensweig, 1987)". No obstante, reconocen que muchos bancos centrales e instituciones que producen ITCRM, utilizan el CPI dada la disponibilidad (At the same time, many central banks and international organizations employ the CPI as it is readily available over a long period and is comparable across a large number of countries (see Appendix II in Klau \& Fung, 2006; Table 3 in Lauro \& Schmitz, 2012; Ellis, 2001)) y dejan abierta la posibilidad de incluir otros tipos de deflactores (Alternative deflators that have been used in the literature include unit labor costs and the GDP deflator, but their coverage across countries and time is limited.)
+Al respecto del índice de precios a escoger, Tochklov (2020) sugiere índice de precios mayoristas (o índices al productor, IPP) en oposición al índice de precio al consumidor (IPC): \textit{"The selection of price indices is also of major importance for RER. Conceptually, Producer Price Index ... is the preferable option given the focus on competitiveness of suppliers and the fact that the Consumer Price Index ... contains a substantial number of nontraded goods and services, a large import component, and products with controlled or subsidies prices (\cite{clark1999}; Ellis, 2001; Rosensweig, 1987)". No obstante, reconocen que muchos bancos centrales e instituciones que producen ITCRM, utilizan el IPC dada la indisponibilidad del IPP\footnote{At the same time, many central banks and international organizations employ the CPI as it is readily available over a long period and is comparable across a large number of countries (see Appendix II in Klau \& Fung, 2006; Table 3 in Lauro \& Schmitz, 2012; Ellis, 2001))} y dejan abierta la posibilidad de incluir otros tipos de deflactores\footnote{Alternative deflators that have been used in the literature include unit labor costs and the GDP deflator, but their coverage across countries and time is limited.}.
 
 En suma, siguen la metodología de Clark et al. (1999) según la cual el índice se calcula como:
 
@@ -31,18 +33,15 @@ donde $E_{t}$ es el tipo de cambio nominal expresado en términos de la moneda d
 
 [Nota: se podría armar un ITCRM regional en base a las regiones del IPC de INDEC. Esta formula no nos sirve exactamente para la provincia de Santa Fe. Me parece que una mejor opción es el paper de Yan et al. (2016).]
 
-La selección de socios comerciales:
+\subsection{Discusión metodológica: ¿cómo se definen los socios comerciales?}
 
-- En el caso de Tochklov (2021): aquellos países que contabilizan un total del 85\% de las exportaciones e importaciones a nivel nacional durante el período 2000-2016. The weights are fixed for the entire sample period based on the trade levels in 2014, which is the earliest
-year with foreign trade data available for the complete set of Russian regions as reported by the
-Federal Customs Service.
+En el caso de Rusia, se contemplan aquellos países que contabilizan un total del 85\% de las exportaciones e importaciones a nivel nacional durante el período 2000-2016. Dado que utilizan el PPI para deflactar, y el mismo está basado en bienes manufactureros, se excluye el comecio de productos de agricultura bruta (\textit{raw agricultaural products}, en base a una clasificación –Harmonized System codes 1 through 15–). Las ponderaciones del intercambio comercial por país se mantiene fija en todo el período, a aprtir de los niveles de comercio de 2014, que es el primer año con datos disponibles para todas las regiones.
 
-- En el caso de Yan et al. (2016): While including all trading partners would be an ideal approach, it is not viable. The
+Por su parte, en el caso de China, : While including all trading partners would be an ideal approach, it is not viable. The
 Real effective Exchange Rate and Regional Economic Growth in China 47 ©2016 Institute of World Economics and Politics, Chinese Academy of Social Sciences IMF practice includes the top 20 trading partners according to bilateral trading volume.
 Instead, we intend to choose as many leading trading partners as possible to ensure the accuracy of the REER indices. In this paper, we select the top 40 trading partners to cover at least 80 percent of trading volume of the province. The trading partners included in the REER construction are listed in Table 1.
 
 - En el caso de Clar et al (1999), fueron por importacia de exportaciones, incluyendo un total de 50 países que alcanzan el 91\%.
 
 No hay muchísima bibliografía aparentemente de tipos de cambio regionales... buena noticia, porque podemos hacer algo novedoso.
-
 

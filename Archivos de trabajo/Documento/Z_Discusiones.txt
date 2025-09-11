@@ -1,0 +1,8 @@
+Definir construcción de socios comerciales
+
+Definir si se tratará de un indicador diario o mensual. Para realizar el primero, seguiría la metodología exacta del ITCRM:
+
+El valor diario de todos los IPC surge de aplicar la siguiente fórmula de ajuste que distribuye geométricamente la variación mensual que haya experimentado cada índice:
+
+IPC_{t}=IPC_{t-1}*FA
+FA=[1+ΔIPC/100]^(1/d)
