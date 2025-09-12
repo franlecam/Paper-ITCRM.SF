@@ -20,3 +20,26 @@ En este repositorio, se encuentran los siguientes archivos:
 5) Socios comerciales.xlsx:
 
 (Nosotros). Construcción de socios comerciales a partir de 2).
+
+
+6) dataset_IMF_CPI.csv:
+(IMF). Consumer Price index, mensual, 2001-2024
+
+7) dataset_limpio_IMF_CPI.xlsx:
+(Nosotros). Consumer Price index de los socios por exportaciones seleccionados en 5). mensual, 2001-2024
+
+8) dataset_IMF_PPI.csv
+(IMF) Productor Price index, mensual, 2001-2024
+
+
+
+
+
+c(
+  "Saudi Arabia", "Algeria", "Australia", "Bangladesh", "Belgium", "Brazil", "Chile",
+  "China, People's Republic of", "Colombia", "Korea, Republic of", "Denmark", "Ecuador", "Egypt, Arab Republic of", "Spain", "United States",
+  "Philippines", "France", "Greece", "India", "Indonesia", "Iran, Islamic Republic of", "Ireland", "Italy",
+  "Jordan", "Latvia, Republic of", "Malaysia", "Malta", "Morocco", "Mexico", "Netherlands, The",
+  "Paraguay", "Pakistan", "Peru", "Poland, Republic of", "United Kingdom", "Dominican Republic",
+  "Germany", "Russian Federation", "South Africa", "Thailand", "Tunisia", "Türkiye, Republic of", "Uruguay",
+  "Venezuela, República Bolivariana de", "Vietnam")
