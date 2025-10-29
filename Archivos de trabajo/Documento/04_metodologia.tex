@@ -1,0 +1,18 @@
+\section{Metodologia}\label{section3} 
+Se utilizaron datos de exportaciones con origen en la provincia de Santa Fe, expresados en dólares FOB, provenientes del Instituto Provincial de Estadística y Censos (IPEC) para el período 2001–2024, desagregados según país de destino.
+En primer lugar, se sistematizó la información con el objetivo de consolidar en una única base todos los países que en algún momento del período analizado recibieron exportaciones de Santa Fe.
+
+A continuación, se calcularon las participaciones de cada país en el total exportado por la provincia en cada año. Con dichas participaciones se construyeron las canastas de socios comerciales anuales de Santa Fe. Específicamente, para cada año se ordenaron los países según su participación —de mayor a menor— y se seleccionaron aquellos que, en conjunto, representaron el 80\% del valor total exportado en ese año. 
+
+La elección del umbral del 80\% responde a la necesidad de captar la porción más representativa del comercio exterior provincial, asegurando que la canasta refleje los principales destinos efectivamente relevantes sin incorporar países con participaciones marginales y elevada volatilidad. \textcolor{red}{AGREGAR REFERENCIAS BIBLIGRAFICAS PARA SUSTENTAR ESTE CRITERIO.}
+
+Este procedimiento permitió identificar 24 canastas anuales correspondientes al período analizado. Posteriormente, se elaboró una canasta total de socios comerciales que incluye a todos los países que integraron al menos una de las canastas anuales. Como resultado, se obtuvo un conjunto de 45 países que, en algún momento del período, formaron parte del 80\% de las exportaciones provinciales.
+
+Finalmente, se construyó una matriz de datos con 24 años y 45 países. Cada celda de la matriz representa la participación de un país en el total exportado por Santa Fe en un año determinado. En los casos en que un país no integró la canasta correspondiente a un año específico, su participación se registró como cero.
+
+Estas ponderaciones varian cada año, lo que presmite capturar la dinamica comercial de la provincia a lo largo del tiempo, evitando sesgos que podrian surgir al utilizar una canasta fija.
+
+\vfill
+Para la elaboración del ITCRM provincial, se aplicó un índice Laspeyres geométrico encadenado EL DEL BCRA, que permite incorporar dichas ponderaciones anuales obtenidas de las canastas de socios comerciales. Este tipo de índice utiliza las participaciones de cada país en las exportaciones del período anterior como ponderaciones, y agrega las variaciones anuales del tipo de cambio real bilateral mediante un promedio geométrico ponderado.
+
+La elección de la forma geométrica atenuar el efecto de valores extremos, mientras que el encadenamiento permite actualizar las ponderaciones año a año mediante las canastas mencionadas previamente, reflejando los cambios en la estructura del comercio exterior provincial. 
