@@ -2,12 +2,20 @@
 
 \subsection{ITCRM en otros países}
 
-La literatura sobre índices de tipo de cambio real multilateral es relativamente escasa. A continuación se pretence hacer una revisión de aquellos que se encuentra disponibles.
+La literatura sobre índices de tipo de cambio real multilateral es relativamente escasa entre países, aunque profunda entre aquellos que han investigado tipos de cambio reales diferentes a los de nivel nacional.
 
-En el caso de Rusia, \cite{tochkov_2021} desarrolló un sistema de TCRM sobre 77 regiones del país –de un total de 85–, atravezando 8 distritos federales\footnote{Al respecto, se menciona esta nota: Three autonomous areas (Nenets, Yamalo-Nenets, and Khanty-Mansi) were counted as parts of the larger regions
+Mediante la nomenclatura REER debido a sus siglas en inglés (\textit{real effective exchange rate}), los países han estudiado otras formas de tipo de cambio para evaluar si una modificación en el tipo de cambio de la moneda domestica podía afectar de manera heterogénea a las regiones del país.
+
+En efecto, ¿cuál es motivo por el cual la utilización de un tipo de cambio real multilateral para todo el país es válida? Tanto más intrigante es esta pregunta cuanto más grande es el país que se analiza. En este caso, Argentina no cae por fuera de la muestra, encontrando diferentes estructuras productivas al interior del país.  DESCRIBIR BREVEMENTE SU ESTRUCTURA PRODUCTIVA Y EXPORTADORA, COMO EL SECTOR AGROPECUARIO SE HA CONSOLIDADO COMO EL SECTOR IMPULSOR Y CONDICIONADOR DE SU CRECIMIENTO, AL TIEMPO QUE EN LOS ÚLTIMOS AÑOS PARECE COMENZAR A APARECER UN NUEVO SECTOR QUE VIENE A COMPETIR POR UN PUESTO DE GRAN RELEVANCIA EN EL ESCENARIO. Estaría buenísimo replicar Tabla 1 de \cite{clark1999} para dar cuenta de esto.
+
+
+De esta manera, encontramos diferentes ejemplos de aplicación.
+
+En el caso de Rusia, \cite{tochkov_2021} desarrolló un sistema de TCRM sobre un total de 77 regiones del país –de un total de 85–, atravezando 8 distritos federales\footnote{Al respecto, se menciona esta nota: Three autonomous areas (Nenets, Yamalo-Nenets, and Khanty-Mansi) were counted as parts of the larger regions
 they are subordinated to due to lack of data. Also excluded were the City of Sevastopol and the Republic of Crimea
 which were annexed by Russia in 2014.}. Dicho sistema, llamado RER en base a sus siglas en inglés (\textit{Real exchange rate}) recoge la evolución y la diferencia respecto al índice nacional durante el período 2000-2016.
-El índice se construye siguiendo la metodología de \cite{clark_1999}, que es la más utilizada en la literatura. En particular, el índice se calcula como un promedio geométrico\footnote{Existe una discusión acerca del tipo de promedio, en rigor: geométrico y aritmético, fallando la literatura en favor del primero. Al respecto, véase \cite{brodsky_1982} y Rosensweig, J. (1987).} ponderado de los tipos de cambio reales bilaterales entre la región y sus principales socios comerciales. Los pesos son fijos y se basan en los niveles de comercio del año 2014, que es el primer año con datos disponibles para todas las regiones.
+
+El índice se construye siguiendo la metodología de \cite{clark_1999}. En particular, el índice se calcula como un promedio geométrico\footnote{Existe una discusión acerca del tipo de promedio, en rigor: geométrico y aritmético, fallando la literatura en favor del primero. Al respecto, véase \cite{brodsky_1982} y Rosensweig, J. (1987).} ponderado de los tipos de cambio reales bilaterales entre la región y sus principales socios comerciales. Los pesos son fijos y se basan en los niveles de comercio del año 2014, que es el primer año con datos disponibles para todas las regiones.
 
 La definición que proponen para RER es la que conocemos:
 {
@@ -18,6 +26,28 @@ bilateral RERs are usually averaged to generate a weighted index.
 }
 
 Otro ejemplo es el de \cite{yan_2016}, quienes construyen un índice de tipo de cambio real multilateral para las provincias chinas. En este caso, el índice se construye para 31 provincias y 40 socios comerciales, que en conjunto representan al menos el 80\% del volumen comercial de la provincia. El período analizado es 1995-2012. La metodología utilizada es similar a la de \cite{clark_1999} y \cite{tochkov_2021}, pero con algunas diferencias en la selección de los socios comerciales y en la elección del índice de precios.
+
+Nótese que \cite{yan_2016} no siguen, ni citan, el trabajo de Clark.
+
+Siguiendo a \cite{clark1999}, y readaptando su explicación para el caso de una región, existen diferentes aspectos centrales a la hora de construir un índice de tipo de cambio.
+
+En primer lugar, la selección de las ponderaciones del índice. En efecto, el índice intenta recoger participaciones de los tipos de cambio de los socios comerciales. La respuesta viene por tres alternativas: una ponderación basada en las importaciones, en las exportaciones o en la suma de ambas que la región mantiene con el resto del mundo.
+
+Asimismo, el autor señala en su nota al pie que pueden tomarse los pesos o ponderaciones del intercambio bilateral o multilateral, prefiriéndose el primero al tiempo que señala el trabajo seminal de Kercheval (1987). 
+
+Otra cuestión de las ponderaciones refiere a si éstas se actualizan (pesos móviles) o se mantienen (pesos fijos). En otras palabras, interesa saber si los países cambiarán su ponderación a lo largo del tiempo, o si se mantendrán fijas (l autor menciona trabajos en uno y otro sentido). 
+
+El segundo aspecto refiere, por supuesto, a la temporalidad del índice, al tiempo que el tercero refiere al tipo de promedio utilizado: aritmético o geométrico\footnote{Al respecto sobre sus usos, véase Coughlin & Pollard (1996) y Rosenweig (1987)}.
+
+En cuarto lugar, se menciona a los países que se incluyen y por ende aquellos que se excluyen. Lo deseable en este caso es poder registrar a todos, pero dado que se hace difícil en términos de disponibilidad de datos, así como de un gran conjunto de datos (aspecto con menor importancia dadas las condiciones computacionales actuales), se sueñe utilizar aquella cantidad de países que alcanza cierto umbral.
+
+El quinto lugar, \cite{clark1999} se lo reserva a el tipo de índice: nominal o real, recomendando la utilización de este último por los problemas que adolece el primero.
+
+Si bien llegado a este punto Clark omite la enumeración, lo cierto es que se podría asociar al sexto aspecto al estimador del precios de los países extranjeros. En efecto, este aspecto es consecuencia de escoger un tipo de cambio real. En este caso se menciona como mejor alternativa el uso de índices de precio al productor, debido a que los índices de precios al consumidor contienen bienes y servicios no transables. Este argumento es muy fuerte contra la utilización de IPC para medir nivel de precio de socios comerciales. No obstante, lo cierto es que muchos bancos centrales y organizaciones internacionales utilizan IPC para representar el nivel de precios de los países, tal como así lo menciona \cite{tochkov_2021}, quien además menciona como alternativa utilizada en la literatura a la unidad de costo laboral y el deflactor del PIB, aunque alerta que su utilización no es tan extendida por parte de todos los países.
+
+Por último, se hace mención de la agregación del comercio bilateral. Lo deseable sería contar con exportaciones de bienes y de servicios a los demás países, aunque lo más usual es que existan datos de bienes producidos en la región.
+
+Otro aspecto que no se menciona (DE MOMENTO EN NINGUN LADO, SALVO BCRA) es la actualización o no de las ponderaciones. Estas pueden ser fijas
 
 \subsection{Discusión metodológica: ¿qué índice de precios utilizar?}
 
