@@ -7,7 +7,7 @@ base::library("ggplot2")
 #CARGAS ARCHIVO ####
 data <-
   openxlsx::read.xlsx(
-    "C:/Users/vcorvalan/Desktop/Trabajo/Paper/ITCRM/Datos/Datos_origen_2002_2024.xlsx",
+    "C:/Users/vcorvalan/Desktop/Trabajo/Paper/Paper-ITCRM.SF/Archivos de trabajo/Vale/Datos/Datos_origen_2002_2024.xlsx",
     sheet = "x"
     )
 
@@ -72,9 +72,6 @@ base_top10 <-
   group_by(DESCRIP_PCIA, CANIO) %>%
   arrange(desc(porcentaje), .by_group = TRUE) %>%
   mutate(rank = row_number()) %>%
-  mutate(
-    DESCRIP_PAIS = ifelse(rank <= 5, DESCRIP_PAIS, "RESTO DEL MUNDO")
-  ) %>%
   group_by(DESCRIP_PCIA, CANIO, DESCRIP_PAIS) %>%
   summarise(porcentaje = sum(porcentaje), .groups = "drop")
 
@@ -140,5 +137,5 @@ for (prov in provincias) {
 }
 
 saveWorkbook(wb, 
-             "C:/Users/vcorvalan/Desktop/Trabajo/Paper/ITCRM/Datos_origen_2002_2024.xlsxdestinos_exportacion_top10_pct.xlsx",
+             "C:/Users/vcorvalan/Desktop/Trabajo/Paper/Paper-ITCRM.SF/Archivos de trabajo/Vale/share_socios_total.xlsx",
              overwrite = TRUE)
