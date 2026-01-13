@@ -2,12 +2,15 @@ library(readxl)
 library(dplyr)
 library(purrr)
 library(stringr)
+library(openxlsx)
+library(tidyr)
 
 mes_map <- c(
   ene = 1, feb = 2, mar = 3, abr = 4,
   may = 5, jun = 6, jul = 7, ago = 8,
   sep = 9, oct = 10, nov = 11, dic = 12
 )
+
 
 extraer_mes <- function(nombre_hoja) {
   
@@ -28,13 +31,14 @@ archivos <- list.files(
   full.names = TRUE
 )
 
-archivos
 
 extraer_anio <- function(path) {
   as.integer(str_extract(basename(path), "\\d{4}"))
 }
 
+
 read_excel(archivos[1], sheet = 1) |> glimpse()
+
 
 leer_hoja <- function(path, hoja, anio) {
   
@@ -71,7 +75,6 @@ leer_hoja <- function(path, hoja, anio) {
 
 
 
-
 leer_archivo <- function(path) {
   
   anio <- extraer_anio(path)
@@ -83,28 +86,20 @@ leer_archivo <- function(path) {
   )
 }
 
+#### TRABAJANDO CON UN ANIO ####
 base_2017 <- leer_archivo(archivos[1])
 
 glimpse(base_2017)
 
-# Cantidad de países únicos
-n_distinct(base_2017$destino)
+n_distinct(base_2017$destino) # Cantidad de países únicos
 
-# Rango de meses
-range(base_2017$mes)
+range(base_2017$mes) # Rango de meses
 
-# Ver si quedó algún total
-base_2017 %>% 
-  filter(str_detect(destino, "TOTAL|AMERICA|EUROPA|AFRICA"))
-
-base_2017 <- leer_archivo(archivos[1])
-
-base_2017 %>%
-  count(tipo_destino)
 
 base_2017 %>%
   filter(tipo_destino == "agregado") %>%
   distinct(destino)
+
 
 base_2017_mensual <- base_2017 %>%
   arrange(destino, año, mes) %>%
@@ -125,7 +120,8 @@ base_2017_mensual <- base_2017 %>%
 
 
 base_2017_mensual %>%
-  filter(exportaciones_mensual < 0)
+  filter(exportaciones_mensual < 0) #TIENE QUE DAR CERO
+
 
 base_2017_mensual %>%
   group_by(destino, año) %>%
@@ -136,6 +132,7 @@ base_2017_mensual %>%
   ) %>%
   mutate(diferencia = dic_acum - total_mensual)
 
+
 base_2017_limpia <- base_2017_mensual %>%
   group_by(destino, año) %>%
   filter(
@@ -143,6 +140,7 @@ base_2017_limpia <- base_2017_mensual %>%
       max(exportaciones_acum, na.rm = TRUE) > 0
   ) %>%
   ungroup()
+
 
 base_2017_limpia %>%
   filter(str_detect(
@@ -152,9 +150,15 @@ base_2017_limpia %>%
 
 n_distinct(base_2017_limpia$destino)
 
+setdiff(
+  unique(base_2017$destino),
+  unique(base_2017_limpia$destino)
+)  #CATEGORIAS QUE SE ELIMINAN
 
-#### PARA EL RESTO DE LOS ANIOS ####
-leer_archivo <- function(path) {
+
+
+#### PARA EL RESTO DE LOS ANIOS #### 
+leer_archivo <- function(path) { 
   
   anio <- extraer_anio(path)
   hojas <- excel_sheets(path)
@@ -182,7 +186,9 @@ leer_archivo <- function(path) {
     ungroup()
 }
 
-base_total <- map_dfr(archivos, leer_archivo)
+ 
+base_total <- map_dfr(archivos, leer_archivo)  #LOOP PARA HACERLO CON TODOS LOS ARCHIVOS
+
 
 destinos_validos <- base_total %>%
   group_by(destino, año) %>%
@@ -192,10 +198,12 @@ destinos_validos <- base_total %>%
   ) %>%
   filter(is.finite(max_acum), max_acum > 0)
 
+
 base_final <- base_total %>%
   semi_join(destinos_validos, by = c("destino", "año"))
 
-range(base_final$mes) #CHECH QUE DEBE DAR 1 12
+
+range(base_final$mes) #CHECK QUE DEBE DAR 1 12
 
 base_final %>%
   filter(exportaciones_mensual < 0)
@@ -209,7 +217,6 @@ write.csv(
 )
 
 #### PIVOT PARA TENER DESTINOS COMO COLUMNAS ####
-library(tidyr)
 
 base_final_unica <- base_final %>%
   group_by(destino, año, mes) %>%
@@ -236,7 +243,6 @@ glimpse(base_pivot_destinos)
 base_pivot_destinos <- base_pivot_destinos %>%
   mutate(across(-fecha, ~ replace_na(.x, 0)))
 
-library(openxlsx)
 
 write.xlsx(
   base_pivot_destinos,
@@ -298,13 +304,6 @@ base_80_participaciones %>%
     n_paises = n()
   )
 
-library(openxlsx)
-
-write.xlsx(
-  base_80_participaciones,
-  file = "base_paises_80_participaciones_mensual.xlsx",
-  overwrite = TRUE
-)
 
 base_80_participaciones <- base_80_participaciones %>%
   mutate(
