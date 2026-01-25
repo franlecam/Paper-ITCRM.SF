@@ -271,46 +271,32 @@ base_paises %>%
   group_by(año, mes) %>%
   summarise(suma = sum(participacion))
 
-base_pareto_paises <- base_paises %>%
-  arrange(año, mes, desc(participacion)) %>%
-  group_by(año, mes) %>%
-  mutate(
-    participacion_acum = cumsum(participacion)
-  ) %>%
-  ungroup()
-
-paises_80_mes <- base_pareto_paises %>%
-  group_by(año, mes) %>%
-  filter(
-    participacion_acum <= 0.80 |
-      lag(participacion_acum, default = 0) < 0.80
-  ) %>%
-  ungroup()
-
-base_80_participaciones <- paises_80_mes %>%
+base_100_participaciones <- base_paises %>%
   select(
     destino,
     año,
     mes,
     exportaciones_mensual,
-    participacion,
-    participacion_acum
+    participacion
   )
 
-base_80_participaciones %>%
+base_100_participaciones %>%
   group_by(año, mes) %>%
-  summarise(
-    cobertura = sum(participacion),
-    n_paises = n()
-  )
+  summarise(suma = sum(participacion))
 
-
-base_80_participaciones <- base_80_participaciones %>%
+base_100_participaciones <- base_100_participaciones %>%
   mutate(
     fecha = as.Date(sprintf("%d-%02d-01", año, mes))
   )
 
-base_pivot_part <- base_80_participaciones %>%
+base_100_participaciones_unica <- base_100_participaciones %>%
+  group_by(fecha, destino) %>%
+  summarise(
+    participacion = sum(participacion, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+base_pivot_part <- base_100_participaciones_unica %>%
   select(fecha, destino, participacion) %>%
   pivot_wider(
     names_from  = destino,
@@ -319,17 +305,11 @@ base_pivot_part <- base_80_participaciones %>%
   ) %>%
   arrange(fecha)
 
-base_pivot_part %>%
-  mutate(suma = rowSums(across(-fecha))) %>%
-  summarise(
-    min = min(suma),
-    max = max(suma)
-  )
 
 dim(base_pivot_part)
 
 write.xlsx(
   base_pivot_part,
-  file = "participaciones_paises_80_panel.xlsx",
+  file = "participaciones_paises_100_panel.xlsx",
   overwrite = TRUE
 )
