@@ -1,9 +1,15 @@
+options(scipen = 999)
 library(readxl)
 library(dplyr)
 library(purrr)
 library(stringr)
+library(tidyr)
 
-ruta_archivo <- "C:/Users/SFC/OneDrive/Escritorio/Paper-ITCRM.SF/Archivos de trabajo/Yami/ALL COUNTRIES/Exportaciones-con-origen-en-Santa-Fe-segun-destino-2001-2024-1 (1).xlsx"
+ruta_archivo <- "C:/Repositorios/Paper-ITCRM.SF/Archivos de trabajo/Yami/ALL COUNTRIES/Exportaciones anuales (IPEC).xlsx"
+
+# ruta Yami "C:/Users/SFC/OneDrive/Escritorio/Paper-ITCRM.SF/Archivos de trabajo/Yami/ALL COUNTRIES/Exportaciones anuales (IPEC).xlsx"
+
+# ruta Fran "C:/Repositorios/Paper-ITCRM.SF/Archivos de trabajo/Yami/ALL COUNTRIES"
 
 hojas <- excel_sheets(ruta_archivo)
 
@@ -32,39 +38,41 @@ base_exportaciones <- map_dfr(
   leer_y_limpiar_hoja
 )
 
-glimpse(base_exportaciones)
-filter(base_exportaciones, str_detect(destino, "Total|TOTAL|total"))
-base_exportaciones %>%
-  count(anio) %>%
-  arrange(anio)
+# glimpse(base_exportaciones)
+# filter(base_exportaciones, str_detect(destino, "Total|TOTAL|total"))
+# base_exportaciones %>%
+#   count(anio) %>%
+#   arrange(anio)
 
-library(dplyr)
-library(readr)
-library(stringr)
-
-base_exportaciones_limpia <- base_exportaciones %>%
+base_exportaciones_limpia <- base_exportaciones %>% 
   mutate(
-    exportaciones = parse_number(exportaciones)
-  )
-
-base_exportaciones_limpia <- base_exportaciones_limpia %>%
+    exportaciones = parse_number(exportaciones) # covnertir texto a número
+  ) %>%
   filter(
     !is.na(exportaciones),                        # solo valores numéricos
     !str_detect(destino, regex("total", ignore_case = TRUE)),
     !str_detect(destino, regex("país", ignore_case = TRUE)),
     !str_detect(destino, regex("evolución", ignore_case = TRUE)),
     !destino %in% c("AFRICA", "AMERICA", "ASIA", "EUROPA", "OCEANIA")
-  )
+  ) # se eliminan los subtotales por continente
 
-base_exportaciones_limpia <- base_exportaciones_limpia %>%
-  mutate(
-    destino = str_trim(destino),
-    destino = str_to_upper(destino)
-  )
+# base_exportaciones_limpia <- base_exportaciones_limpia %>%
+#   mutate(
+#     destino = str_trim(destino),
+#     destino = str_to_upper(destino)
+#   )
 
 str(base_exportaciones_limpia)
 summary(base_exportaciones_limpia$exportaciones)
 any(is.na(base_exportaciones_limpia$exportaciones))
+
+# CONTROL SUMA #
+
+control <- base_exportaciones_limpia %>%
+  group_by(anio) %>%
+  summarize(total = sum(exportaciones, na.rm = T))
+
+#
 
 base_participaciones <- base_exportaciones_limpia %>%
   group_by(anio) %>%
@@ -113,8 +121,6 @@ ponderadores <- base_exportaciones_colapsada %>%
 ponderadores %>%
   group_by(anio) %>%
   summarise(suma = sum(participacion))
-
-library(tidyr)
 
 ponderadores_wide <- ponderadores %>%
   select(anio, destino, participacion) %>%
