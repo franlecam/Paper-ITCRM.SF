@@ -46,14 +46,14 @@ base_exportaciones <- map_dfr(
 
 base_exportaciones_limpia <- base_exportaciones %>% 
   mutate(
-    exportaciones = parse_number(exportaciones) # covnertir texto a número
+    exportaciones = as.numeric(exportaciones) # covnertir texto a número
   ) %>%
   filter(
     !is.na(exportaciones),                        # solo valores numéricos
     !str_detect(destino, regex("total", ignore_case = TRUE)),
-    !str_detect(destino, regex("país", ignore_case = TRUE)),
+    # !str_detect(destino, regex("país", ignore_case = TRUE)),
     !str_detect(destino, regex("evolución", ignore_case = TRUE)),
-    !destino %in% c("AFRICA", "AMERICA", "ASIA", "EUROPA", "OCEANIA")
+    !destino %in% c("AFRICA", "AMERICA", "ASIA", "EUROPA", "OCEANIA", "DESCONOCIDO")
   ) # se eliminan los subtotales por continente
 
 # base_exportaciones_limpia <- base_exportaciones_limpia %>%
@@ -143,5 +143,5 @@ library(writexl)
 
 write_xlsx(
   ponderadores_wide,
-  "ponderadores_exportaciones_santa_fe_wide_2001_2024.xlsx"
+  "Ponderadores brutos.xlsx"
 )
