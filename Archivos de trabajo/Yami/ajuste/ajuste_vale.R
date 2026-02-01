@@ -52,9 +52,9 @@ summary(reg_ARG_mult)
 summary(reg_SFE_BCRA_mult)
 summary(reg_SFE_Berre_mult)
 ## X FILTRADAS | GEBC####
-reg_ARG_mult_fil       <- lm(log(X) ~ log(ITCRM_ARG_BCRA)  + log(GEBC))
-reg_SFE_BCRA_mult_fil  <- lm(log(X) ~ log(ITCRM_SFE_BCRA)  + log(GEBC))
-reg_SFE_Berre_mult_fil <- lm(log(X) ~ log(ITCRM_SFE_berre) + log(GEBC))
+reg_ARG_mult_fil       <- lm(log(X_FIL) ~ log(ITCRM_ARG_BCRA)  + log(GEBC))
+reg_SFE_BCRA_mult_fil  <- lm(log(X_FIL) ~ log(ITCRM_SFE_BCRA)  + log(GEBC))
+reg_SFE_Berre_mult_fil <- lm(log(X_FIL) ~ log(ITCRM_SFE_berre) + log(GEBC))
 
 summary(reg_ARG_mult_fil)
 summary(reg_SFE_BCRA_mult_fil)
@@ -76,3 +76,4 @@ reg_SFE_Berre_mult_fil_2 <- lm(log(X) ~ log(ITCRM_SFE_berre) + log(GEBC) + log(V
 summary(reg_ARG_mult_fil_2)
 summary(reg_SFE_BCRA_mult_fil_2)
 summary(reg_SFE_Berre_mult_fil_2)
+
