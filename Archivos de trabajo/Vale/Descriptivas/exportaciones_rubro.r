@@ -100,15 +100,15 @@ ggplot(base_plot, aes(x = anio, y = porcentaje, fill = rubro)) +
   ) +
   guides(fill = guide_legend(nrow = 1))
 
-ggsave(
-  filename = "grafico_expo_prov.png",
-  plot = grafico1,
-  width = 35,
-  height = 25,
-  units = "cm",
-  dpi = 300,
-  bg = "white"
-)
+# ggsave(
+#   filename = "grafico_expo_prov.png",
+#   plot = grafico1,
+#   width = 35,
+#   height = 25,
+#   units = "cm",
+#   dpi = 300,
+#   bg = "white"
+# )
 
 ###SANTA FE VS NACIONAL | X POR RUBRO ANUAL####
 base_anual <- 
@@ -184,15 +184,15 @@ ggplot(base_sf_vs_nat_pct,
   ) +
   guides(fill = guide_legend(nrow = 1))
 
-ggsave(
-  filename = "X_rubro_anual_sfe_vs_arg.png",
-  plot = grafico2,
-  width = 55,
-  height = 25,
-  units = "cm",
-  dpi = 300,
-  bg = "white"
-)
+# ggsave(
+#   filename = "X_rubro_anual_sfe_vs_arg.png",
+#   plot = grafico2,
+#   width = 55,
+#   height = 25,
+#   units = "cm",
+#   dpi = 300,
+#   bg = "white"
+# )
 
 #### ESTADISTICAS DESCRIPTIVAS ####
 descriptivas1 <- 
