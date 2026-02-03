@@ -4,10 +4,14 @@ base::library("tidyverse")
 base::library("dplyr")
 base::library("ggplot2")
 
+# ruta fran C:/Repositorios/Paper-ITCRM.SF/Archivos de trabajo/Vale/Descriptivas/exportaciones.xlsx
+
+# ruta Vale C:/Users/vcorvalan/Desktop/Trabajo/Paper/ITCRM/exportaciones.xlsx
+
 #CARGAS ARCHIVO ####
 data <-
   openxlsx::read.xlsx(
-    "C:/Users/vcorvalan/Desktop/Trabajo/Paper/ITCRM/exportaciones.xlsx",
+    "C:/Repositorios/Paper-ITCRM.SF/Archivos de trabajo/Vale/Descriptivas/exportaciones.xlsx",
     sheet = "x"
     )
 #PRUEBAS ####
