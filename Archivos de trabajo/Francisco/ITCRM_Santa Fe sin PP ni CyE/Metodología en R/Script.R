@@ -727,3 +727,24 @@ control_paises <- data.frame(
 
 control_paises
 
+
+
+# CARGANDO DATOS DE ARGENTINA ####
+
+er.cpi_arg <- readxl::read_excel("Datos.xlsx",
+                       sheet = "Arg")
+
+str(er.cpi_arg)
+
+# PASANDO EN LIMPIO ####
+
+rubros <- readxl::read_excel("Datos.xlsx",
+                             sheet = "rubros",
+                             col_names = T)
+
+er.cpi_arg <- readxl::read_excel("Datos.xlsx",
+                                 sheet = "Arg")
+
+cpi <- read.csv("CPI all.csv")
+
+er <- read.csv("ER all.csv")
