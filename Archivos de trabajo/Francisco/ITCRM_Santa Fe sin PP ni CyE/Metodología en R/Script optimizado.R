@@ -531,6 +531,10 @@ participaciones_anuales <- rubros_filtrado1 %>%
     .groups = "drop"
   )
 
+participaciones_anuales %>%
+  group_by(Año) %>%
+  summarise(total = sum(participacion, na.rm=T))
+
 # afdsa ####
 # 1.a) CHECK: unicidad de la llave (Año, pais)
 #      Debe devolver 0 filas
@@ -539,6 +543,7 @@ participaciones_anuales %>%
   count(Año, pais) %>%
   filter(n > 1)
 
+length(unique(participaciones_anuales$pais))
 
 # afdsa ####
 # 2) PANEL MENSUAL CPI–ER CON AÑO EXPLÍCITO
@@ -566,6 +571,9 @@ panel_mes_pais1 <- panel_mes_pais1 %>%
     by = c("Año", "pais")
   )
 
+panel_mes_pais1 %>%
+  group_by(Año) %>%
+  summarise(total = sum(participacion, na.rm=T))
 
 # afdsa ####
 # 4) CHECK FUERTE: MASA ANUAL DEL PANEL
@@ -605,6 +613,7 @@ left_join(check_panel, share_cpi_er_panel, by = "Año") %>%
     diff = suma_participacion - share_cpi_er_panel
   )
 
+# CORRER HASTA ACÁ ####
 ### INCORORARNDO ARGENTINA ####
 
 panel_mes_pais1
@@ -696,6 +705,8 @@ panel_mes_pais5 <- panel_mes_pais4 %>%
 
 summary(panel_mes_pais5$tcrm_bilateral)
 
+## PRIMERA OPCIÓN DE ITCRM ####
+## ignora recalibración de participaciones
 
 itcrm <- panel_mes_pais5 %>%
   filter(!is.na(participacion_norm),
@@ -810,6 +821,222 @@ ggplot() +
   labs(
     title = "ITCRM Argentina – Comparación",
     subtitle = "Azul: aritmético | Rojo: geométrico | Negro: BCRA",
+    x = NULL,
+    y = "Índice (base 2002 = 100)"
+  ) +
+  theme_minimal()
+
+
+## NUEVA ESTIMACION EN BASE A CONSIDERAR PARTICIPACIONES ARREGLADAS # 16:18 - 8/02/2026 ####
+
+### CHQUEO: VERIFICACIÓN EN BASE A ITCRM NO RESCALANDO PARTICIPACONES ####
+
+#### 1) Chequeo: cuánto se pierde por mes y qué masa de ponderaciones queda ####
+
+#### 1.1) Auditoría mensual: faltantes y masa de pesos "usable" ####
+audit_mes <- panel_mes_pais5 %>%
+  mutate(
+    ok_w    = !is.na(participacion_norm),
+    ok_tcrm = !is.na(tcrm_bilateral) & is.finite(tcrm_bilateral),
+    ok_all  = ok_w & ok_tcrm
+  ) %>%
+  group_by(mes) %>%
+  summarise(
+    n_paises_total = n_distinct(pais),
+    n_ok           = sum(ok_all, na.rm = TRUE),
+    share_w_ok     = sum(participacion_norm[ok_all], na.rm = TRUE),
+    share_w_miss   = 1 - share_w_ok,
+    .groups = "drop"
+  ) %>%
+  arrange(mes)
+
+audit_mes
+
+#### 1.2) Mirar los peores meses (más masa perdida) ####
+
+audit_mes %>%
+  arrange(share_w_ok) %>%
+  head(20)
+
+#### 2) Chequeo: qué países son los que faltan en los meses problemáticos ####
+
+mes_problema <- audit_mes %>%
+  arrange(share_w_ok) %>%
+  slice(1:3) %>%
+  pull(mes)
+
+mes_problema
+
+# Lista de países faltantes por esos meses
+faltantes_detalle <- panel_mes_pais5 %>%
+  filter(mes %in% mes_problema) %>%
+  transmute(
+    mes, pais,
+    participacion_norm,
+    cpi_2002, cpi_arg_2002,
+    er, er_arg,
+    tcrm_bilateral,
+    falta_algo = is.na(participacion_norm) | is.na(tcrm_bilateral)
+  ) %>%
+  filter(falta_algo) %>%
+  arrange(mes, desc(participacion_norm))
+
+faltantes_detalle
+
+## ITRCRM RESCALADO ####
+
+## DESDE ACÁ
+
+panel_mes_pais6 <- panel_mes_pais5 %>%
+  mutate(
+    estado_info = case_when(
+      !is.na(er)  & is.finite(er) &
+        !is.na(cpi_2002) & is.finite(cpi_2002) ~ "tc e ipc",
+      
+      !is.na(er)  & is.finite(er) ~ "tc",
+      
+      !is.na(cpi_2002) & is.finite(cpi_2002) ~ "ipc",
+      
+      TRUE ~ "ninguno"
+    )
+  ) %>%
+  mutate(
+    tcrm_computable =
+      !is.na(er) & is.finite(er) &
+      !is.na(cpi_2002) & is.finite(cpi_2002) &
+      !is.na(er_arg) & is.finite(er_arg) &
+      !is.na(cpi_arg_2002) & is.finite(cpi_arg_2002)
+  )
+
+panel_mes_pais6 %>%
+  filter(
+    tcrm_computable &
+      (is.na(tcrm_bilateral) | !is.finite(tcrm_bilateral))
+  )
+
+# cobertura
+
+cobertura_mes <- panel_mes_pais6 %>%
+  mutate(
+    indicador_tcrm = as.numeric(tcrm_computable)
+  ) %>%
+  group_by(mes) %>%
+  summarise(
+    cobertura = sum(participacion_norm * indicador_tcrm, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+plot(cobertura_mes$cobertura)
+
+#
+
+plot(panel_mes_pais4 %>%
+       # filter(estado_info == "tc e ipc") %>%
+       group_by(mes)  %>%
+       summarise(total = sum(participacion, na.rm = T)))
+
+participaciones_anuales %>%
+  group_by(Año) %>%
+  summarise(total = sum(participacion, na.rm=T))
+
+
+
+### chequeo participaciones ####
+
+participaciones_anuales %>% 
+  group_by(Año) %>%
+  summarise(total = sum(participacion))
+
+panel_mes_pais6 <- panel_mes_pais5 %>%
+  mutate(
+    tiene_tc  = !is.na(er)  & is.finite(er),
+    tiene_ipc = !is.na(cpi_2002) & is.finite(cpi_2002),
+    
+    estado_info = case_when(
+      tiene_tc  & tiene_ipc ~ "tc e ipc",
+      tiene_tc  & !tiene_ipc ~ "tc",
+      !tiene_tc & tiene_ipc ~ "ipc",
+      TRUE                  ~ "ninguno"
+    )
+  )
+
+itcrm_geo_rescaled <- panel_mes_pais5 %>%
+  filter(!is.na(participacion_norm),
+         !is.na(tcrm_bilateral),
+         is.finite(tcrm_bilateral),
+         tcrm_bilateral > 0) %>%
+  group_by(mes) %>%
+  mutate(
+    w_mes = participacion_norm / sum(participacion_norm, na.rm = TRUE)
+  ) %>%
+  summarise(
+    itcrm_geo = exp(sum(w_mes * log(tcrm_bilateral), na.rm = TRUE)),
+    masa_w_original = sum(participacion_norm, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(mes)
+
+# Rebase aritmético reescalado
+base_itcrm_2002_rescaled <- itcrm_rescaled %>%
+  filter(format(mes, "%Y") == "2002") %>%
+  summarise(b = mean(itcrm, na.rm = TRUE)) %>%
+  pull(b)
+
+itcrm_rescaled_final <- itcrm_rescaled %>%
+  mutate(itcrm_2002_100 = itcrm / base_itcrm_2002_rescaled * 100)
+
+# Rebase geométrico reescalado
+base_itcrm_geo_2002_rescaled <- itcrm_geo_rescaled %>%
+  filter(format(mes, "%Y") == "2002") %>%
+  summarise(b = mean(itcrm_geo, na.rm = TRUE)) %>%
+  pull(b)
+
+itcrm_geo_rescaled_final <- itcrm_geo_rescaled %>%
+  mutate(itcrm_geo_2002_100 = itcrm_geo / base_itcrm_geo_2002_rescaled * 100)
+
+# Comparación (si todavía tenés itcrm_final e itcrm_geo_final)
+comparacion <- itcrm_final %>%
+  select(mes, itcrm_2002_100) %>%
+  rename(old_arit = itcrm_2002_100) %>%
+  left_join(itcrm_rescaled_final %>% select(mes, new_arit = itcrm_2002_100), by = "mes") %>%
+  left_join(itcrm_geo_final %>% select(mes, old_geo = itcrm_geo_2002_100), by = "mes") %>%
+  left_join(itcrm_geo_rescaled_final %>% select(mes, new_geo = itcrm_geo_2002_100), by = "mes") %>%
+  mutate(
+    diff_arit = new_arit - old_arit,
+    diff_geo  = new_geo  - old_geo
+  )
+
+summary(comparacion$diff_arit)
+summary(comparacion$diff_geo)
+
+comparacion %>% arrange(desc(abs(diff_arit))) %>% head(15)
+comparacion %>% arrange(desc(abs(diff_geo)))  %>% head(15)
+
+plot_df <- itcrm_geo_rescaled_final %>%
+  select(mes, itcrm_geo_2002_100) %>%
+  rename(geo_rescaled = itcrm_geo_2002_100) %>%
+  left_join(
+    itcrm_bcra_fix %>%
+      select(mes, itcrm_bcra_2002),
+    by = "mes"
+  )
+
+library(ggplot2)
+
+ggplot(plot_df, aes(x = mes)) +
+  geom_line(
+    aes(y = geo_rescaled),
+    color = "firebrick",
+    linewidth = 0.9
+  ) +
+  geom_line(
+    aes(y = itcrm_bcra_2002),
+    color = "black",
+    linewidth = 0.9
+  ) +
+  labs(
+    title = "ITCRM Argentina – Comparación",
+    subtitle = "Rojo: ITCRM geométrico reescalado | Negro: ITCRM BCRA",
     x = NULL,
     y = "Índice (base 2002 = 100)"
   ) +
