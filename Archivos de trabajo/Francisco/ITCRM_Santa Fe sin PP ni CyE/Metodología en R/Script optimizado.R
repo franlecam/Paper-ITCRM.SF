@@ -543,6 +543,7 @@ participaciones_anuales %>%
   count(Año, pais) %>%
   filter(n > 1)
 
+length(unique(participaciones_anuales$pais))
 
 # afdsa ####
 # 2) PANEL MENSUAL CPI–ER CON AÑO EXPLÍCITO
