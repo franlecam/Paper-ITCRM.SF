@@ -613,6 +613,7 @@ left_join(check_panel, share_cpi_er_panel, by = "Año") %>%
     diff = suma_participacion - share_cpi_er_panel
   )
 
+# CORRER HASTA ACÁ ####
 ### INCORORARNDO ARGENTINA ####
 
 panel_mes_pais1

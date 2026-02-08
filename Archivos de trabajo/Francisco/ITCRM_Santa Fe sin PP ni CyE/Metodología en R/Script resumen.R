@@ -130,14 +130,14 @@ itcrm_final <- itcrm %>%
     itcrm_nivel = 100 * cumprod(itcrm_factor)
   )
 
+# correr hasta acá####
 itcrm_vale <- readxl::read_excel("C:/Repositorios/Paper-ITCRM.SF/Archivos de trabajo/Vale/ITCRM/Sin PP y C&E/ITCRM_metodología BCRA_SIN PP NI CYE.xlsx",
                    sheet= "ITCRM", 
                    range = "a1:k301", col_names = T) %>%
-  select(1,6,9) %>%
+  select(1,9) %>%
   rename(
     mes = 1,
-    bcra = 2,
-    itcrm_vale = 3
+    itcrm_vale = 2
   )
 
 itcrm_comp <- itcrm_final %>%
@@ -153,11 +153,11 @@ ggplot(itcrm_comp, aes(x = mes)) +
     linewidth = 0.9,
     linetype = "dashed"
   ) +
-  geom_line(
-    aes(y = bcra, color = "ITCRM bcra"),
-    linewidth = 0.9,
-    linetype = "dashed"
-  ) +
+  # geom_line(
+  #   aes(y = bcra, color = "ITCRM bcra"),
+  #   linewidth = 0.9,
+  #   linetype = "dashed"
+  # ) +
   labs(
     title = "ITCRM Argentina – Comparación",
     subtitle = "Cálculo propio vs. Vale",
@@ -165,8 +165,8 @@ ggplot(itcrm_comp, aes(x = mes)) +
     y = "Índice"
   ) +
   scale_color_manual(
-    values = c("ITCRM R" = "steelblue", "ITCRM Vale" = "black",
-               "ITCRM bcra" = "red")
+    values = c("ITCRM R" = "steelblue", "ITCRM Vale" = "black")
+               # "ITCRM bcra" = "red")
   ) +
   theme_minimal() +
   theme(legend.title = element_blank())
