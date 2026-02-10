@@ -275,3 +275,18 @@ ggplot(itcrm_comp_base2024, aes(x = mes)) +
   ) +
   theme_minimal() +
   theme(legend.title = element_blank())
+
+# descargar ITCRM - agregado por valentín
+library(openxlsx)
+wb <- openxlsx::createWorkbook()
+openxlsx::addWorksheet(wb, "ITCRM")
+openxlsx::writeData(wb, "ITCRM", itcrm_final)
+openxlsx::saveWorkbook(wb,
+                       "C:/Users/vcorvalan/Desktop/Trabajo/Paper-ITCRM.SF/Archivos de trabajo/Vale/ITCRM.xlsx",
+                       overwrite = TRUE)
+
+
+
+
+
+
