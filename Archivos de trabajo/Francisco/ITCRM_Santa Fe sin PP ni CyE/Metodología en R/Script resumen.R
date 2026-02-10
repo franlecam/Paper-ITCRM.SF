@@ -130,8 +130,43 @@ itcrm_final <- itcrm %>%
     itcrm_nivel = 100 * cumprod(itcrm_factor)
   )
 
+
+### grafico ####
+itcrm_bcra <- readxl::read_excel("C:/Users/SFC/OneDrive/Escritorio/Paper-ITCRM.SF/Archivos de trabajo/Yami/itcrm bcra.xlsx",
+                                 col_names = T) 
+
+itcrm_graf <- itcrm_final %>%
+  left_join(itcrm_bcra, by = "mes")
+
+ggplot(itcrm_graf, aes(x = mes)) +
+  geom_line(
+    aes(y = itcrm_nivel, color = "ITCRM SFE"),
+    linewidth = 0.9
+  ) +
+  geom_line(
+    aes(y = ITCRM, color = "ITCRM ARG"),
+    linewidth = 0.9,
+  ) +
+  labs(
+    title = "ITCRM – Comparación",
+    x = NULL,
+    y = "Índice"
+  ) +
+  scale_color_manual(
+    values = c("ITCRM SFE" = "steelblue", "ITCRM ARG" = "black")
+  ) +
+  theme_minimal() +
+  theme(legend.title = element_blank())
+
+
+
 # correr hasta acá####
-itcrm_vale <- readxl::read_excel("C:/Repositorios/Paper-ITCRM.SF/Archivos de trabajo/Vale/ITCRM/Sin PP y C&E/ITCRM_metodología BCRA_SIN PP NI CYE.xlsx",
+itcrm_vale <- readxl::read_excel(
+  
+  # "C:/Repositorios/Paper-ITCRM.SF/Archivos de trabajo/Vale/ITCRM/Sin PP y C&E/ITCRM_metodología BCRA_SIN PP NI CYE.xlsx",
+  
+  # path yami:                               
+  "C:/Users/SFC/OneDrive/Escritorio/Paper-ITCRM.SF/Archivos de trabajo/Vale/ITCRM/Sin PP y C&E/ITCRM_metodología BCRA_SIN PP NI CYE.xlsx" ,                            
                    sheet= "ITCRM", 
                    range = "a1:k301", col_names = T) %>%
   select(1,9) %>%
