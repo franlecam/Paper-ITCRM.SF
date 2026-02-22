@@ -130,7 +130,6 @@ itcrm_final <- itcrm %>%
     itcrm_nivel = 100 * cumprod(itcrm_factor)
   )
 
-
 ### grafico ####
 itcrm_bcra <- readxl::read_excel("C:/Users/SFC/OneDrive/Escritorio/Paper-ITCRM.SF/Archivos de trabajo/Yami/itcrm bcra.xlsx",
                                  col_names = T) 
@@ -317,11 +316,42 @@ wb <- openxlsx::createWorkbook()
 openxlsx::addWorksheet(wb, "ITCRM")
 openxlsx::writeData(wb, "ITCRM", itcrm_final)
 openxlsx::saveWorkbook(wb,
-                       "C:/Users/vcorvalan/Desktop/Trabajo/Paper-ITCRM.SF/Archivos de trabajo/Vale/ITCRM.xlsx",
+                       "ITCRM.xlsx",
                        overwrite = TRUE)
 
+#graficos de tcrb
+tcrb <- 
+  panel_mes_pais8 |> 
+  select(mes, pais, tcr_bilateral, participacion_norm, ponderador_adj) 
 
+pais_tcrb <- 
+  tcrb |> 
+  select(mes, pais, tcr_bilateral) |> 
+  pivot_wider(names_from = pais,
+              values_from = tcr_bilateral)
 
+pais_part_norm <- 
+  tcrb |> 
+  select(mes, pais, participacion_norm) |> 
+  pivot_wider(names_from = pais,
+              values_from = participacion_norm)
 
+pais_ponderador_adj <- 
+  tcrb |> 
+  select(mes, pais, ponderador_adj) |> 
+  pivot_wider(names_from = pais,
+              values_from = ponderador_adj)
+
+library(openxlsx)
+wb <- openxlsx::createWorkbook()
+openxlsx::addWorksheet(wb, "TCRB")
+openxlsx::writeData(wb, "TCRB", pais_tcrb)
+openxlsx::addWorksheet(wb, "Part_norm")
+openxlsx::writeData(wb, "Part_norm", pais_part_norm)
+openxlsx::addWorksheet(wb, "Ponderador_adj")
+openxlsx::writeData(wb, "Ponderador_adj", pais_ponderador_adj)
+openxlsx::saveWorkbook(wb,
+                       "ITCRB.xlsx",
+                       overwrite = TRUE)
 
 
