@@ -613,7 +613,7 @@ str(er.cpi_arg)
 
 er_cpi_arg_fix <- er.cpi_arg %>%
   rename(
-    mes     = ...1,
+    mes     = mes,
     cpi_arg = IPC_ARG,
     er_arg  = TC_ARG
   ) %>%

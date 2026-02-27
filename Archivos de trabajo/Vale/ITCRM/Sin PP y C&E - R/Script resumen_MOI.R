@@ -26,7 +26,7 @@ panel_mes_pais2 <- panel_mes_pais1 %>%
 
 er_cpi_arg_fix <- er.cpi_arg %>%
   rename(
-    mes     = ...1,
+    mes     = mes,
     cpi_arg = IPC_ARG,
     er_arg  = TC_ARG
   ) %>%
@@ -130,10 +130,13 @@ itcrm_final <- itcrm %>%
     itcrm_nivel = 100 * cumprod(itcrm_factor)
   )
 
-
 ### grafico ####
-itcrm_bcra <- readxl::read_excel("C:/Users/SFC/OneDrive/Escritorio/Paper-ITCRM.SF/Archivos de trabajo/Yami/itcrm bcra.xlsx",
+itcrm_bcra <- readxl::read_excel("C:/Users/vcorvalan/Desktop/Trabajo/Paper-ITCRM.SF/Archivos de trabajo/Vale/ITCRM/Sin PP y C&E - R/Datos.xlsx",
+                                 sheet = "Arg",
                                  col_names = T) 
+itcrm_bcra <- 
+  itcrm_bcra |> 
+  select(itcrm_bcra, mes)
 
 itcrm_graf <- itcrm_final %>%
   left_join(itcrm_bcra, by = "mes")
@@ -144,7 +147,7 @@ ggplot(itcrm_graf, aes(x = mes)) +
     linewidth = 0.9
   ) +
   geom_line(
-    aes(y = ITCRM, color = "ITCRM ARG"),
+    aes(y = itcrm_bcra, color = "ITCRM ARG"),
     linewidth = 0.9,
   ) +
   labs(
@@ -314,14 +317,63 @@ ggplot(itcrm_comp_base2024, aes(x = mes)) +
 # descargar ITCRM - agregado por valentín
 library(openxlsx)
 wb <- openxlsx::createWorkbook()
-openxlsx::addWorksheet(wb, "ITCRM_MOA")
-openxlsx::writeData(wb, "ITCRM_MOA", itcrm_final)
+openxlsx::addWorksheet(wb, "ITCRM")
+openxlsx::writeData(wb, "ITCRM", itcrm_final)
 openxlsx::saveWorkbook(wb,
                        "ITCRM_MOA.xlsx",
                        overwrite = TRUE)
 
+#graficos de tcrb
+tcnb <- 
+  panel_mes_pais4 |> 
+  select(mes, pais, tc_bilateral)
 
+pais_tcnb <- 
+  tcnb |> 
+  select(mes, pais, tc_bilateral) |> 
+  pivot_wider(names_from = pais,
+              values_from = tc_bilateral)
 
+library(openxlsx)
+wb <- openxlsx::createWorkbook()
+openxlsx::addWorksheet(wb, "TCNB")
+openxlsx::writeData(wb, "TCNB", pais_tcnb)
+openxlsx::saveWorkbook(wb,
+                       "ITCNB.xlsx",
+                       overwrite = TRUE)
 
+tcrb <- 
+  panel_mes_pais8 |> 
+  select(mes, pais, tcr_bilateral, participacion_norm, ponderador_adj) 
+
+pais_tcrb <- 
+  tcrb |> 
+  select(mes, pais, tcr_bilateral) |> 
+  pivot_wider(names_from = pais,
+              values_from = tcr_bilateral)
+
+pais_part_norm <- 
+  tcrb |> 
+  select(mes, pais, participacion_norm) |> 
+  pivot_wider(names_from = pais,
+              values_from = participacion_norm)
+
+pais_ponderador_adj <- 
+  tcrb |> 
+  select(mes, pais, ponderador_adj) |> 
+  pivot_wider(names_from = pais,
+              values_from = ponderador_adj)
+
+library(openxlsx)
+wb <- openxlsx::createWorkbook()
+openxlsx::addWorksheet(wb, "TCRB")
+openxlsx::writeData(wb, "TCRB", pais_tcrb)
+openxlsx::addWorksheet(wb, "Part_norm")
+openxlsx::writeData(wb, "Part_norm", pais_part_norm)
+openxlsx::addWorksheet(wb, "Ponderador_adj")
+openxlsx::writeData(wb, "Ponderador_adj", pais_ponderador_adj)
+openxlsx::saveWorkbook(wb,
+                       "ITCRB2.xlsx",
+                       overwrite = TRUE)
 
 

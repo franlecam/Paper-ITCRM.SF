@@ -613,7 +613,7 @@ str(er.cpi_arg)
 
 er_cpi_arg_fix <- er.cpi_arg %>%
   rename(
-    mes     = ...1,
+    mes     = mes,
     cpi_arg = IPC_ARG,
     er_arg  = TC_ARG
   ) %>%
@@ -744,7 +744,7 @@ ggplot() +
   ) +
   labs(
     title = "ITCRM Argentina – Comparación",
-    subtitle = "Azul: ITCRM propio (MOA) (base 2002 = 100) | Negro: ITCRM BCRA",
+    subtitle = "Azul: ITCRM propio (base 2002 = 100) | Negro: ITCRM BCRA",
     x = NULL,
     y = "Índice"
   ) +
@@ -814,11 +814,3 @@ ggplot() +
     y = "Índice (base 2002 = 100)"
   ) +
   theme_minimal()
-
-library(openxlsx)
-wb <- createWorkbook()
-openxlsx::addWorksheet(wb, "ITCRM_MOI")
-openxlsx::writeData(wb, "ITCRM_MOI", itcrm_geo_final)
-saveWorkbook(wb, 
-             "ITCRM_MOI.xlsx", 
-             overwrite = TRUE)
