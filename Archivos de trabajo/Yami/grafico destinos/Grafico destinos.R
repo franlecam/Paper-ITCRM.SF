@@ -6,10 +6,10 @@ library(stringi)
 
 Datos <- Datos %>%
   mutate(
-    pais_clean = DESCRIP_PAIS %>%
-      str_trim() %>%
-      str_squish() %>%
-      str_to_lower()   )
+    pais_clean = DESCRIP_PAIS %>%  #creamos la columna de paises clean
+      str_trim() %>% #quita espacios al principio y final
+      str_squish() %>% #quita doble espaciado
+      str_to_lower()   ) #todo en minusculas
 
 Datos <- Datos %>%
   mutate(
@@ -51,23 +51,37 @@ Datos <- Datos %>%
       pais_clean == "republica de yemen" ~ "Yemen",
       TRUE ~ str_to_title(pais_clean)
     )
-  )
-
-
-Datos %>%
-  group_by(DESCRIP_PCIA, pais_std)
-
-library(dplyr)
-library(stringr)
-library(stringi)
+  ) #limipiado nombres
 
 Datos <- Datos %>%
   mutate(
-    pcia_clean = DESCRIP_PCIA %>%
+    pais_std = case_when(
+      
+      str_detect(pais_std, regex("corea", ignore_case = TRUE)) ~ "Corea del Sur",
+      
+      str_detect(pais_std, regex("rusia", ignore_case = TRUE)) ~ "Rusia",
+      
+      str_detect(pais_std, regex("hong kong", ignore_case = TRUE)) ~ "Hong Kong",
+      
+      str_detect(pais_std, regex("alemania", ignore_case = TRUE)) ~ "Alemania",
+      
+      TRUE ~ pais_std
+    )
+  )
+
+Datos <- Datos %>%
+  filter(
+    !str_detect(pais_std, "Indeterminado|Simplificadas|Zonamerica|Colón|Zf Parque")
+  )
+
+Datos <- Datos %>% 
+  mutate(
+    pcia_clean = DESCRIP_PCIA %>% #crea la columna de provincias clean, igual que hicimos antes con los paises
       str_trim() %>%
       str_squish() %>%
       str_to_lower()   )
-Datos <- Datos %>%
+
+Datos <- Datos %>% #y ahora las estandarizamos igual que antes
   mutate(
     DESCRIP_PCIA = case_when(
       pcia_clean == "buenos aires" ~ "Buenos Aires",
@@ -101,51 +115,16 @@ Datos <- Datos %>%
     )
   )
 
-
-
-library(dplyr)
-library(ggplot2)
-library(forcats)
-
-# 1️⃣ Agregamos por año, provincia y país
-top5_anios <- Datos %>%
-  group_by(CANIO, DESCRIP_PCIA, pais_std) %>%
-  summarise(exportaciones = sum(DOLARES_FOB, na.rm = TRUE), .groups = "drop") %>%
-  group_by(CANIO, DESCRIP_PCIA) %>%
+Datos <- Datos %>%
   mutate(
-    total_prov = sum(exportaciones),
-    share = exportaciones / total_prov
-  ) %>%
-  ungroup()
-
-# 2️⃣ Top 5 países por provincia (promedio de participación total)
-top5_global <- top5_anios %>%
-  group_by(DESCRIP_PCIA, pais_std) %>%
-  summarise(avg_share = mean(share), .groups = "drop") %>%
-  group_by(DESCRIP_PCIA) %>%
-  slice_max(avg_share, n = 5) %>%
-  ungroup()
-
-# 3️⃣ Filtramos solo esos países
-top5_anios <- top5_anios %>%
-  semi_join(top5_global, by = c("DESCRIP_PCIA", "pais_std"))
-
-# 4️⃣ Gráfico
-ggplot(top5_anios, aes(x = as.integer(CANIO), y = share, color = pais_std)) +
-  geom_line(size = 1) +
-  geom_point(size = 1.5) +
-  facet_wrap(~ DESCRIP_PCIA, scales = "free_y") +
-  labs(
-    title = "Participación de los 5 principales destinos de exportación por provincia a lo largo de los años",
-    x = "Año",
-    y = "Participación",
-    color = "País"
-  ) +
-  theme_minimal(base_size = 10) +
-  theme(
-    legend.position = "bottom",
-    strip.text = element_text(size = 10),
-    axis.text.x = element_text(angle = 45, hjust = 1)
+    DESCRIP_PCIA = case_when(
+      DESCRIP_PCIA %in% c(
+        "Ciudad Autónoma De Buenos Aires",
+        "Ciudad Autonoma De Buenos Aires",
+        "Ciudad Autonoma de Buenos Aires"
+      ) ~ "Ciudad Autónoma de Buenos Aires",
+      TRUE ~ DESCRIP_PCIA
+    )
   )
 
 
@@ -153,44 +132,106 @@ library(dplyr)
 library(ggplot2)
 library(forcats)
 
-# 1️⃣ Agregamos exportaciones por año, provincia y país
+#Agregamos exportaciones por año, provincia y país
 export_por_pais <- Datos %>%
   group_by(CANIO, DESCRIP_PCIA, pais_std) %>%
   summarise(exportaciones = sum(DOLARES_FOB, na.rm = TRUE), .groups = "drop")
 
-# 2️⃣ Calculamos top 5 países por provincia (promedio de participación)
-top5_global <- export_por_pais %>%
-  group_by(DESCRIP_PCIA, pais_std) %>%
-  summarise(total_prov = sum(exportaciones), .groups = "drop") %>%
-  group_by(DESCRIP_PCIA) %>%
-  slice_max(total_prov, n = 5) %>%
-  ungroup() %>%
-  select(DESCRIP_PCIA, pais_std)
+export_por_pais <- Datos %>%
+  group_by(CANIO, DESCRIP_PCIA, pais_std) %>%
+  summarise(exportaciones = sum(DOLARES_FOB, na.rm = TRUE), .groups = "drop")
 
-# 3️⃣ Creamos columna "Otros" para los países fuera del top 5
-export_por_pais <- export_por_pais %>%
-  left_join(top5_global %>% mutate(is_top5 = TRUE),
-            by = c("DESCRIP_PCIA", "pais_std")) %>%
+export_por_pais <- export_por_pais %>% #calcula las participaciones de los paises
+  group_by(CANIO, DESCRIP_PCIA) %>%
   mutate(
-    pais_plot = ifelse(is.na(is_top5), "Otros", pais_std)
+    total = sum(exportaciones),
+    share = exportaciones / total
+  ) %>%
+  ungroup()
+
+top5_anual <- export_por_pais %>% #selecciona los 5 (o los que querramos) paises con mayor expo cada año para cada provincia
+  group_by(CANIO, DESCRIP_PCIA) %>%
+  slice_max(exportaciones, n = 5, with_ties = TRUE) %>% #con FALSE hace un corte arbitrario en empates, si ponemos TRUE puede arrojar mas de 5 si hay un empate
+  ungroup() %>%
+  select(CANIO, DESCRIP_PCIA, pais_std) %>%
+  mutate(is_top5 = TRUE)
+
+export_plot <- export_por_pais %>%
+  left_join(top5_anual, by = c("CANIO", "DESCRIP_PCIA", "pais_std")) %>%
+  mutate(
+    pais_plot = ifelse(is.na(is_top5), "Otros", pais_std) #crea la categoria otros para los paises que no estan en el top 5
   ) %>%
   group_by(CANIO, DESCRIP_PCIA, pais_plot) %>%
   summarise(exportaciones = sum(exportaciones), .groups = "drop")
 
-# 4️⃣ Gráfico de barras apiladas normalizadas (100%)
-ggplot(export_por_pais, aes(x = as.factor(CANIO), y = exportaciones, fill = pais_plot)) +
+ggplot(export_plot, aes(x = CANIO, y = exportaciones, fill = pais_plot)) +
   geom_col(position = "fill") +
-  facet_wrap(~ DESCRIP_PCIA, scales = "free_y") +
+  facet_wrap(~ DESCRIP_PCIA) +
   scale_y_continuous(labels = scales::percent_format()) +
   labs(
-    title = "Participación de los principales destinos de exportación por provincia",
+    title = "Participación de destinos de exportación (Top 5 por año)",
     x = "Año",
     y = "Participación (%)",
     fill = "País"
   ) +
-  theme_minimal(base_size = 10) +
+  theme_minimal() +
   theme(
-    legend.position = "bottom",
-    strip.text = element_text(size = 10),
+    legend.position = "none",
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
+
+unique(export_plot$pais_plot)
+
+paises_clave <- c(
+  "Brasil",
+  "China",
+  "Estados Unidos",
+  "Chile",
+  "India",
+  "Vietnam",
+  "Países Bajos",
+  "España",
+  "Italia"
+)
+
+export_plot <- export_plot %>%
+  mutate(
+    pais_plot2 = case_when(
+      pais_plot %in% paises_clave ~ pais_plot,
+      pais_plot == "Otros" ~ "Otros",
+      TRUE ~ "Otros países"
+    )
+  )
+
+colores <- c(
+  "Brasil" = "#1b9e77",          # verde fuerte (regional líder)
+  "China" = "#d95f02",           # naranja (demanda global)
+  "Estados Unidos" = "#7570b3",  # violeta
+  "Chile" = "#e7298a",           # fucsia
+  "India" = "#66a61e",           # verde oliva (distinto de Brasil)
+  "Vietnam" = "#e6ab02",         # amarillo mostaza
+  "Países Bajos" = "#a6761d",    # marrón (hub logístico)
+  "España" = "#1f78b4",          # azul fuerte
+  "Italia" = "#b2df8a",          # verde claro (UE)
+  
+  "Otros países" = "grey70",
+  "Otros" = "grey40"
+)
+
+ggplot(export_plot, aes(x = CANIO, y = exportaciones, fill = pais_plot2)) +
+  geom_col(position = "fill") +
+  facet_wrap(~ DESCRIP_PCIA) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = colores) +
+  labs(
+    title = "Participación de destinos de exportación (Top 5 dinámico)",
+    x = "Año",
+    y = "Participación (%)",
+    fill = "País"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
