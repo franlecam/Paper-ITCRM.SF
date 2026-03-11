@@ -235,3 +235,246 @@ ggplot(export_plot, aes(x = CANIO, y = exportaciones, fill = pais_plot2)) +
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
 
+export_plot <- export_plot %>%
+  mutate(CANIO = as.numeric(CANIO))
+
+scale_x_continuous(
+  breaks = seq(min(export_plot$CANIO), max(export_plot$CANIO), by = 2)
+)
+
+grafico_destinos <- 
+  ggplot(export_plot, aes(x = CANIO, y = exportaciones, fill = pais_plot2)) +
+  geom_col(position = "fill", width = 0.9, color = "grey30", linewidth = 0.2) +
+  facet_wrap(~ DESCRIP_PCIA, ncol = 5) +
+  scale_fill_manual(values = colores) +
+  scale_x_continuous(
+    breaks = sort(unique(export_plot$CANIO)),
+    guide = guide_axis(check.overlap = TRUE)
+  ) +
+  scale_y_continuous(
+    labels = scales::percent_format(),
+    breaks = seq(0, 1, by = 0.2)
+  ) +
+  labs(
+    title = "Participación de destinos de exportación (Top 5 dinámico)",
+    x = "Año",
+    y = "Participación (%)",
+    fill = "País"
+  ) +
+  theme_minimal(base_size = 10) +
+  theme(
+    legend.position = "bottom",
+    legend.direction = "horizontal",
+    panel.spacing.y = unit(1.2, "lines"),
+    strip.text = element_text(size = 12, face = "bold"),
+    strip.background = element_rect(fill = "grey90", color = NA),
+    axis.text.x = element_text(
+      angle = 90,
+      size = 12,
+      vjust = 0.5,
+      hjust = 1
+    ),
+    axis.text.y = element_text(size = 12),
+    legend.text = element_text(size = 12),
+    axis.title.y = element_text(size = 12),
+    panel.grid.major.x = element_blank()
+  ) +
+  guides(fill = guide_legend(nrow = 1))
+
+
+ggsave(
+  filename = "grafico_expo_prov.png",
+  plot = grafico_destinos,
+  width = 35,
+  height = 20,
+  units = "cm",
+  dpi = 300,
+  bg = "white"
+)
+
+
+export_nacional <- Datos %>%
+  group_by(CANIO, pais_std) %>%
+  summarise(
+    exportaciones = sum(DOLARES_FOB, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+export_nacional <- export_nacional %>%
+  group_by(CANIO) %>%
+  mutate(
+    total = sum(exportaciones),
+    share = exportaciones / total
+  ) %>%
+  ungroup()
+
+top5_nacional <- export_nacional %>%
+  group_by(CANIO) %>%
+  slice_max(exportaciones, n = 5, with_ties = TRUE) %>%
+  ungroup() %>%
+  select(CANIO, pais_std) %>%
+  mutate(is_top5 = TRUE)
+
+export_plot_nac <- export_nacional %>%
+  left_join(top5_nacional, by = c("CANIO", "pais_std")) %>%
+  mutate(
+    pais_plot = ifelse(is.na(is_top5), "Otros", pais_std)
+  ) %>%
+  group_by(CANIO, pais_plot) %>%
+  summarise(exportaciones = sum(exportaciones), .groups = "drop")
+
+export_plot_nac <- export_plot_nac %>%
+  mutate(
+    pais_plot2 = case_when(
+      pais_plot %in% paises_clave ~ pais_plot,
+      pais_plot == "Otros" ~ "Otros",
+      TRUE ~ "Otros países"
+    )
+  )
+
+export_plot_nac <- export_plot_nac %>%
+  mutate(CANIO = as.numeric(CANIO))
+
+grafico_destinos_nacional <-
+  ggplot(export_plot_nac, aes(x = CANIO, y = exportaciones, fill = pais_plot2)) +
+  geom_col(position = "fill", width = 0.9, color = "grey30", linewidth = 0.2) +
+  scale_fill_manual(values = colores) +
+  scale_x_continuous(
+    breaks = seq(min(export_plot_nac$CANIO), max(export_plot_nac$CANIO), by = 2)
+  ) +
+  scale_y_continuous(
+    labels = scales::percent_format(),
+    breaks = seq(0, 1, by = 0.2)
+  ) +
+  labs(
+    title = "Destinos de exportación de Argentina",
+    subtitle = "Participación en las exportaciones totales",
+    x = "Año",
+    y = "Participación (%)",
+    fill = "Destino"
+  ) +
+  theme_minimal(base_size = 16) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold"),
+    plot.subtitle = element_text(size = 16),
+    axis.text.x = element_text(size = 20, angle = 90),
+    axis.text.y = element_text(size = 20),
+    axis.title = element_text(size = 16),
+    legend.title = element_text(size = 15),
+    legend.text = element_text(size = 14),
+    legend.position = "bottom",
+    panel.grid.major.x = element_blank()
+  )
+
+ggsave(
+  "grafico_destinos_argentina.png",
+  grafico_destinos_nacional,
+  width = 20,
+  height = 9,
+  dpi = 300
+)
+
+
+export_sf_vs_nat <- Datos %>%
+  mutate(
+    territorio = case_when(
+      DESCRIP_PCIA == "Santa Fe" ~ "Santa Fe",
+      TRUE ~ "Argentina"
+    )
+  )
+
+expo_sf <- Datos %>%
+  filter(DESCRIP_PCIA == "Santa Fe") %>%
+  group_by(CANIO, pais_std) %>%
+  summarise(
+    exportaciones = sum(DOLARES_FOB, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(territorio = "Santa Fe")
+
+expo_arg <- Datos %>%
+  group_by(CANIO, pais_std) %>%
+  summarise(
+    exportaciones = sum(DOLARES_FOB, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(territorio = "Argentina")
+
+expo_sf_nat <- bind_rows(expo_sf, expo_arg)
+
+expo_sf_nat <- expo_sf_nat %>%
+  group_by(CANIO, territorio) %>%
+  mutate(
+    total = sum(exportaciones),
+    share = exportaciones / total
+  ) %>%
+  ungroup()
+
+top5_sf_nat <- expo_sf_nat %>%
+  group_by(CANIO, territorio) %>%
+  slice_max(exportaciones, n = 5, with_ties = TRUE) %>%
+  ungroup() %>%
+  select(CANIO, territorio, pais_std) %>%
+  mutate(is_top5 = TRUE)
+
+export_plot_sf_nat <- expo_sf_nat %>%
+  left_join(top5_sf_nat, by = c("CANIO", "territorio", "pais_std")) %>%
+  mutate(
+    pais_plot = ifelse(is.na(is_top5), "Otros", pais_std)
+  ) %>%
+  group_by(CANIO, territorio, pais_plot) %>%
+  summarise(exportaciones = sum(exportaciones), .groups = "drop")
+
+export_plot_sf_nat <- export_plot_sf_nat %>%
+  mutate(
+    pais_plot2 = case_when(
+      pais_plot %in% paises_clave ~ pais_plot,
+      pais_plot == "Otros" ~ "Otros",
+      TRUE ~ "Otros países"
+    )
+  )
+
+export_plot_sf_nat <- export_plot_sf_nat %>%
+  mutate(CANIO = as.numeric(CANIO))
+
+grafico_sf_vs_arg <-
+  ggplot(export_plot_sf_nat,
+         aes(x = CANIO, y = exportaciones, fill = pais_plot2)) +
+  geom_col(position = "fill", width = 0.9) +
+  facet_wrap(~ territorio, ncol = 1) +
+  scale_fill_manual(values = colores) +
+  scale_x_continuous(
+    breaks = sort(unique(export_plot_sf_nat$CANIO)),
+    guide = guide_axis(check.overlap = TRUE)
+  ) +
+  scale_y_continuous(
+    labels = scales::percent_format(),
+    breaks = seq(0,1,0.2)
+  ) +
+  labs(
+    x = "Año",
+    y = "Participación en las exportaciones",
+    fill = "Destino"
+  ) +
+  theme_minimal(base_size = 20) +
+  theme(
+    legend.position = "bottom",
+    strip.text = element_text(size = 20, face = "bold"),
+    strip.background = element_rect(fill = "grey90", color = NA),
+    axis.text.x = element_text(angle = 90, size = 20),
+    axis.text.y = element_text(size = 20),
+    legend.text = element_text(size = 20),
+    axis.title.y = element_text(size = 20),
+    panel.grid.major.x = element_blank()
+  ) +
+  guides(fill = guide_legend(nrow = 1))
+
+ggsave(
+  filename = "grafico_destinos_sf_vs_arg.png",
+  plot = grafico_sf_vs_arg,
+  width = 55,
+  height = 25,
+  units = "cm",
+  dpi = 300,
+  bg = "white"
+)

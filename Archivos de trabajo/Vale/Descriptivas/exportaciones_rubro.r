@@ -8,10 +8,12 @@ base::library("ggplot2")
 
 # ruta Vale C:/Users/vcorvalan/Desktop/Trabajo/Paper/ITCRM/exportaciones.xlsx
 
+#ruta Yami "C:/Users/SFC/OneDrive/Escritorio/Paper-ITCRM.SF/Archivos de trabajo/Vale/Descriptivas/exportaciones.xlsx"
+
 #CARGAS ARCHIVO ####
 data <-
   openxlsx::read.xlsx(
-    "C:/Repositorios/Paper-ITCRM.SF/Archivos de trabajo/Vale/Descriptivas/exportaciones.xlsx",
+    "C:/Users/SFC/OneDrive/Escritorio/Paper-ITCRM.SF/Archivos de trabajo/Vale/Descriptivas/exportaciones.xlsx",
     sheet = "x"
     )
 #PRUEBAS ####
@@ -100,15 +102,15 @@ ggplot(base_plot, aes(x = anio, y = porcentaje, fill = rubro)) +
   ) +
   guides(fill = guide_legend(nrow = 1))
 
-# ggsave(
-#   filename = "grafico_expo_prov.png",
-#   plot = grafico1,
-#   width = 35,
-#   height = 25,
-#   units = "cm",
-#   dpi = 300,
-#   bg = "white"
-# )
+ ggsave(
+   filename = "grafico_expo_prov.png",
+   plot = grafico1,
+   width = 35,
+   height = 20,
+   units = "cm",
+   dpi = 300,
+   bg = "white"
+ )
 
 ###SANTA FE VS NACIONAL | X POR RUBRO ANUAL####
 base_anual <- 
@@ -208,3 +210,4 @@ check1 <-
   summarise(
     check = sum(X_promedio)
   )
+
