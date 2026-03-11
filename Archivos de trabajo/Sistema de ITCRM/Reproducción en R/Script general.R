@@ -18,8 +18,8 @@ itcrm_bcra <- read_excel("Datos.xlsx", sheet = "Arg") |>
 cpi <- read.csv("CPI all.csv")
 er  <- read.csv("ER all.csv")
 
-# ============================================================
-# MAPEO DE PAÍSES
+
+# MAPEO DE PAÍSES ####
 # ============================================================
 
 rubros_pulido <- rubros %>%
@@ -734,7 +734,7 @@ participaciones <- rubros_pulido |>
       TRUE ~ DESCRIP_PCIA
     )
   ) |>
-  filter(Rubro %in% c("MOA", "MOI")) |> # , "PP", "CyE"
+  filter(Rubro %in% c("MOA", "MOI", "PP", "CyE")) |> # 
   mutate(Año = as.integer(Año)) |>
   left_join(pais_master |> select(rubros_std, pais_match), by = "rubros_std") |>
   filter(!is.na(pais_match)) |>
@@ -856,6 +856,7 @@ itcrm_wide |>
     strip.text      = element_text(face = "bold")
   )
 
+# CODIGO PARA ELEGIR UNA PROVINCIA 
 serie_elegida <- "Santa Fe"
 
 itcrm_wide |>
@@ -956,7 +957,7 @@ participaciones_reg <- rubros_pulido |>
     )
   ) |>
   left_join(mapa_regiones, by = "DESCRIP_PCIA") |>
-  filter(Rubro %in% c("MOA", "MOI", "PP", "CyE")) |>
+  filter(Rubro %in% c("MOA", "MOI")) |> # , "PP", "CyE"
   mutate(Año = as.integer(Año)) |>
   left_join(pais_master |> select(rubros_std, pais_match), by = "rubros_std") |>
   filter(!is.na(pais_match)) |>
@@ -1056,3 +1057,4 @@ itcrm_wide_reg |>
     legend.position = "bottom",
     strip.text      = element_text(face = "bold")
   )  
+
