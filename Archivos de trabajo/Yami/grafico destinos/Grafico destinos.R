@@ -1,8 +1,15 @@
+# LIBRERIAS ####
 library(readxl)
-Datos <- read_excel("Datos.xlsx", sheet = "rubros_total_arg")
 library(dplyr)
 library(stringr)
 library(stringi)
+library(ggplot2)
+library(forcats)
+
+# INPUT DATOS ####
+Datos <- read_excel("Datos.xlsx", sheet = "rubros_total_arg")
+
+#LIMPIEZA Y HOMOGENEIZACION DE ETIQUETAS ####
 
 Datos <- Datos %>%
   mutate(
@@ -72,7 +79,7 @@ Datos <- Datos %>%
 Datos <- Datos %>%
   filter(
     !str_detect(pais_std, "Indeterminado|Simplificadas|Zonamerica|Colón|Zf Parque")
-  )
+  ) #QUITAR LUGARES QUE NO SON DESTINOS "VALIDOS"
 
 Datos <- Datos %>% 
   mutate(
@@ -127,16 +134,9 @@ Datos <- Datos %>%
     )
   )
 
-
-library(dplyr)
-library(ggplot2)
-library(forcats)
+#SHARE PROVINCIAS, SELECCION DE DESTINOS Y OTROS ####
 
 #Agregamos exportaciones por año, provincia y país
-export_por_pais <- Datos %>%
-  group_by(CANIO, DESCRIP_PCIA, pais_std) %>%
-  summarise(exportaciones = sum(DOLARES_FOB, na.rm = TRUE), .groups = "drop")
-
 export_por_pais <- Datos %>%
   group_by(CANIO, DESCRIP_PCIA, pais_std) %>%
   summarise(exportaciones = sum(DOLARES_FOB, na.rm = TRUE), .groups = "drop")
@@ -159,28 +159,28 @@ top5_anual <- export_por_pais %>% #selecciona los 5 (o los que querramos) paises
 export_plot <- export_por_pais %>%
   left_join(top5_anual, by = c("CANIO", "DESCRIP_PCIA", "pais_std")) %>%
   mutate(
-    pais_plot = ifelse(is.na(is_top5), "Otros", pais_std) #crea la categoria otros para los paises que no estan en el top 5
+    pais_plot = ifelse(is.na(is_top5), "NotTop5", pais_std) #crea la categoria otros para los paises que no estan en el top 5
   ) %>%
   group_by(CANIO, DESCRIP_PCIA, pais_plot) %>%
   summarise(exportaciones = sum(exportaciones), .groups = "drop")
 
-ggplot(export_plot, aes(x = CANIO, y = exportaciones, fill = pais_plot)) +
-  geom_col(position = "fill") +
-  facet_wrap(~ DESCRIP_PCIA) +
-  scale_y_continuous(labels = scales::percent_format()) +
-  labs(
-    title = "Participación de destinos de exportación (Top 5 por año)",
-    x = "Año",
-    y = "Participación (%)",
-    fill = "País"
-  ) +
-  theme_minimal() +
-  theme(
-    legend.position = "none",
-    axis.text.x = element_text(angle = 45, hjust = 1)
-  )
-
-unique(export_plot$pais_plot)
+# ggplot(export_plot, aes(x = CANIO, y = exportaciones, fill = pais_plot)) +
+#   geom_col(position = "fill") +
+#   facet_wrap(~ DESCRIP_PCIA) +
+#   scale_y_continuous(labels = scales::percent_format()) +
+#   labs(
+#     title = "Participación de destinos de exportación (Top 5 por año)",
+#     x = "Año",
+#     y = "Participación (%)",
+#     fill = "País"
+#   ) +
+#   theme_minimal() +
+#   theme(
+#     legend.position = "none",
+#     axis.text.x = element_text(angle = 45, hjust = 1)
+#   )
+# 
+# unique(export_plot$pais_plot)
 
 paises_clave <- c(
   "Brasil",
@@ -188,63 +188,68 @@ paises_clave <- c(
   "Estados Unidos",
   "Chile",
   "India",
-  "Vietnam",
+  "Viet Nam",
   "Países Bajos",
   "España",
-  "Italia"
+  "Venezuela",  
+  "Perú" #,
+  #  "Italia",
+  #  "Indonesia",    
+  #  "Argelia",    
+  #  "Egipto",  
 )
 
 export_plot <- export_plot %>%
   mutate(
     pais_plot2 = case_when(
       pais_plot %in% paises_clave ~ pais_plot,
-      pais_plot == "Otros" ~ "Otros",
-      TRUE ~ "Otros países"
-    )
+      pais_plot == "NotTop5" ~ "NotTop5",
+      TRUE ~ "Otros_Top5"
+    ),
+    CANIO = as.numeric(CANIO)
   )
 
 colores <- c(
-  "Brasil" = "#1b9e77",          # verde fuerte (regional líder)
-  "China" = "#d95f02",           # naranja (demanda global)
+  "Brasil" = "#1b9e77",          # verde fuerte 
+  "China" = "#ff7f00",           # naranja 
   "Estados Unidos" = "#7570b3",  # violeta
   "Chile" = "#e7298a",           # fucsia
-  "India" = "#66a61e",           # verde oliva (distinto de Brasil)
-  "Vietnam" = "#e6ab02",         # amarillo mostaza
-  "Países Bajos" = "#a6761d",    # marrón (hub logístico)
-  "España" = "#1f78b4",          # azul fuerte
-  "Italia" = "#b2df8a",          # verde claro (UE)
-  
-  "Otros países" = "grey70",
-  "Otros" = "grey40"
+  "India" = "#66a61e",           # verde oliva
+  "Viet Nam" = "#e6ab02",        # amarillo mostaza
+  "Países Bajos" = "#b15928",    # marrón
+  "España" = "#17becf",          # azul fuerte
+ # "Italia" = "#b2df8a",          # verde claro
+  #"Indonesia" = "#1b7f79",       # turquesa oscuro
+ # "Argelia" = "#c0392b",         # rojo ladrillo
+#  "Egipto" = "#d4a017",          # dorado arena
+  "Venezuela" = "#003DA5",       # azul bandera
+  "Perú" = "#C8102E",            # rojo bandera
+  "Otros_Top5" = "grey55",
+  "NotTop5" = "grey80"
 )
 
-ggplot(export_plot, aes(x = CANIO, y = exportaciones, fill = pais_plot2)) +
-  geom_col(position = "fill") +
-  facet_wrap(~ DESCRIP_PCIA) +
-  scale_y_continuous(labels = scales::percent_format()) +
-  scale_fill_manual(values = colores) +
-  labs(
-    title = "Participación de destinos de exportación (Top 5 dinámico)",
-    x = "Año",
-    y = "Participación (%)",
-    fill = "País"
-  ) +
-  theme_minimal() +
-  theme(
-    legend.position = "bottom",
-    axis.text.x = element_text(angle = 45, hjust = 1)
-  )
 
-export_plot <- export_plot %>%
-  mutate(CANIO = as.numeric(CANIO))
+# ggplot(export_plot, aes(x = CANIO, y = exportaciones, fill = pais_plot2)) +
+#   geom_col(position = "fill") +
+#   facet_wrap(~ DESCRIP_PCIA) +
+#   scale_y_continuous(labels = scales::percent_format()) +
+#   scale_fill_manual(values = colores) +
+#   labs(
+#     title = "Participación de destinos de exportación (Top 5 dinámico)",
+#     x = "Año",
+#     y = "Participación (%)",
+#     fill = "País"
+#   ) +
+#   theme_minimal() +
+#   theme(
+#     legend.position = "bottom",
+#     axis.text.x = element_text(angle = 45, hjust = 1)
+#   )
 
-scale_x_continuous(
-  breaks = seq(min(export_plot$CANIO), max(export_plot$CANIO), by = 2)
-)
-
+#GRAFICO PROVINCIAS ####
 grafico_destinos <- 
   ggplot(export_plot, aes(x = CANIO, y = exportaciones, fill = pais_plot2)) +
-  geom_col(position = "fill", width = 0.9, color = "grey30", linewidth = 0.2) +
+  geom_col(position = "fill", width = 0.9, color = "black", linewidth = 0.2) +
   facet_wrap(~ DESCRIP_PCIA, ncol = 5) +
   scale_fill_manual(values = colores) +
   scale_x_continuous(
@@ -256,7 +261,7 @@ grafico_destinos <-
     breaks = seq(0, 1, by = 0.2)
   ) +
   labs(
-    title = "Participación de destinos de exportación (Top 5 dinámico)",
+    title = "Participación de destinos de exportación (Top 5 Argentina)",
     x = "Año",
     y = "Participación (%)",
     fill = "País"
@@ -292,7 +297,8 @@ ggsave(
   bg = "white"
 )
 
-
+#GRAFICO ARGENTINA ####
+#CALCULO DE LAS EXPO NACIONALES
 export_nacional <- Datos %>%
   group_by(CANIO, pais_std) %>%
   summarise(
@@ -308,6 +314,8 @@ export_nacional <- export_nacional %>%
   ) %>%
   ungroup()
 
+
+#TOP 5 NACIONAL
 top5_nacional <- export_nacional %>%
   group_by(CANIO) %>%
   slice_max(exportaciones, n = 5, with_ties = TRUE) %>%
@@ -318,26 +326,22 @@ top5_nacional <- export_nacional %>%
 export_plot_nac <- export_nacional %>%
   left_join(top5_nacional, by = c("CANIO", "pais_std")) %>%
   mutate(
-    pais_plot = ifelse(is.na(is_top5), "Otros", pais_std)
+    pais_plot = ifelse(is.na(is_top5), "NotTop5", pais_std)
   ) %>%
   group_by(CANIO, pais_plot) %>%
-  summarise(exportaciones = sum(exportaciones), .groups = "drop")
-
-export_plot_nac <- export_plot_nac %>%
+  summarise(exportaciones = sum(exportaciones), .groups = "drop") %>%
   mutate(
     pais_plot2 = case_when(
       pais_plot %in% paises_clave ~ pais_plot,
-      pais_plot == "Otros" ~ "Otros",
-      TRUE ~ "Otros países"
-    )
+      pais_plot == "NotTop5" ~ "NotTop5",
+      TRUE ~ "Otros_Top5"
+    ),
+    CANIO = as.numeric(CANIO)
   )
-
-export_plot_nac <- export_plot_nac %>%
-  mutate(CANIO = as.numeric(CANIO))
 
 grafico_destinos_nacional <-
   ggplot(export_plot_nac, aes(x = CANIO, y = exportaciones, fill = pais_plot2)) +
-  geom_col(position = "fill", width = 0.9, color = "grey30", linewidth = 0.2) +
+  geom_col(position = "fill", width = 0.9, color = "black", linewidth = 0.2) +
   scale_fill_manual(values = colores) +
   scale_x_continuous(
     breaks = seq(min(export_plot_nac$CANIO), max(export_plot_nac$CANIO), by = 2)
@@ -375,6 +379,7 @@ ggsave(
 )
 
 
+#GRAFICO COMPARACION ARGENTINA VS SANTA FE ####
 export_sf_vs_nat <- Datos %>%
   mutate(
     territorio = case_when(
@@ -418,29 +423,27 @@ top5_sf_nat <- expo_sf_nat %>%
   mutate(is_top5 = TRUE)
 
 export_plot_sf_nat <- expo_sf_nat %>%
-  left_join(top5_sf_nat, by = c("CANIO", "territorio", "pais_std")) %>%
+  left_join(top5_sf_nat,
+            by = c("CANIO", "territorio", "pais_std")) %>%
   mutate(
-    pais_plot = ifelse(is.na(is_top5), "Otros", pais_std)
+    pais_plot = ifelse(is.na(is_top5), "NotTop5", pais_std)
   ) %>%
   group_by(CANIO, territorio, pais_plot) %>%
-  summarise(exportaciones = sum(exportaciones), .groups = "drop")
-
-export_plot_sf_nat <- export_plot_sf_nat %>%
+  summarise(exportaciones = sum(exportaciones),
+            .groups = "drop") %>%
   mutate(
     pais_plot2 = case_when(
       pais_plot %in% paises_clave ~ pais_plot,
-      pais_plot == "Otros" ~ "Otros",
-      TRUE ~ "Otros países"
-    )
+      pais_plot == "NotTop5" ~ "NotTop5",
+      TRUE ~ "Otros_Top5"
+    ),
+    CANIO = as.numeric(CANIO)
   )
-
-export_plot_sf_nat <- export_plot_sf_nat %>%
-  mutate(CANIO = as.numeric(CANIO))
 
 grafico_sf_vs_arg <-
   ggplot(export_plot_sf_nat,
          aes(x = CANIO, y = exportaciones, fill = pais_plot2)) +
-  geom_col(position = "fill", width = 0.9) +
+  geom_col(position = "fill", width = 0.9, color = "black", linewidth = 0.2) +
   facet_wrap(~ territorio, ncol = 1) +
   scale_fill_manual(values = colores) +
   scale_x_continuous(
@@ -478,3 +481,4 @@ ggsave(
   dpi = 300,
   bg = "white"
 )
+
